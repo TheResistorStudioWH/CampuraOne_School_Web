@@ -1,0 +1,76 @@
+/* ========== Page Transition ========== */
+.app-transition-shell {
+  min-height: 100vh;
+}
+
+.app-transition-shell.leaving.to-dashboard {
+  animation: pageLeaveToDashboard 0.22s ease-in both;
+}
+
+.app-transition-shell.entering.to-dashboard {
+  animation: pageEnterFromLogin 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.app-transition-shell.leaving.to-login {
+  animation: pageLeaveToLogin 0.22s ease-in both;
+}
+
+.app-transition-shell.entering.to-login {
+  animation: pageEnterFromDashboard 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes pageLeaveToDashboard {
+  from {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    filter: blur(8px);
+    transform: scale(0.985);
+  }
+}
+
+@keyframes pageEnterFromLogin {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(18px) scale(0.992);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pageLeaveToLogin {
+  from {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(16px) scale(0.99);
+  }
+}
+
+@keyframes pageEnterFromDashboard {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    transform: scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
+}

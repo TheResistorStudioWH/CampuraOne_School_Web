@@ -1,0 +1,10 @@
+{
+    "table": "主商户表",
+    "field": {
+    "ZH": "管理的商户列表",
+    "EN": "SubShopList"
+    },
+    "ShopIDs": [
+        "1234567"
+    ]
+}

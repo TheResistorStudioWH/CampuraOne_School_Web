@@ -1,0 +1,405 @@
+/* ========== Advertisement Overview / Course Preview ========== */
+
+.ad-overview-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.ad-revenue-card h2 {
+  margin: 0 0 10px;
+  color: #0f172a;
+  font-size: 38px;
+}
+
+.ad-revenue-card p:last-child,
+.ad-placeholder-card p:last-child {
+  margin-bottom: 0;
+}
+
+.ad-placeholder-card {
+  min-height: 150px;
+}
+
+@media (max-width: 900px) {
+  .ad-overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .course-preview-head {
+    display: none;
+  }
+
+  .course-preview-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+
+.action-preview-card {
+  position: relative;
+  padding-right: 74px;
+}
+
+.action-preview-card .card-title-row {
+  margin-right: 0;
+}
+
+.course-preview-table {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid rgba(203, 213, 225, 0.85);
+  border-radius: 22px;
+  background: rgba(241, 245, 249, 0.95);
+}
+
+.course-preview-head,
+.course-preview-row {
+  display: grid;
+  grid-template-columns: 1.4fr 0.9fr 1.15fr 0.85fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.course-preview-head {
+  padding: 0 4px 6px;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.course-preview-row {
+  padding: 9px 10px;
+  border-radius: 13px;
+  color: #475569;
+  background: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+}
+
+.course-preview-row strong {
+  overflow: hidden;
+  color: #0f172a;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.course-preview-row span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.icon-action {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  background: #2563eb;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.22);
+  cursor: pointer;
+  overflow: hidden;
+  font-size: 0;
+  line-height: 1;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.icon-action img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  pointer-events: none;
+  opacity: 0.96;
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+.icon-action:hover img {
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+.icon-action:hover {
+  background: #1d4ed8;
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.3);
+  transform: translateY(-1px) scale(1.04);
+}
+
+.icon-action:active {
+  transform: translateY(0) scale(0.96);
+}
+
+/* ========== Main Dark Mode ========== */
+
+@media (prefers-color-scheme: dark) {
+  body {
+    color: #e5e7eb;
+    background:
+      radial-gradient(circle at top left, rgba(37, 99, 235, 0.22), transparent 34%),
+      radial-gradient(circle at top right, rgba(124, 58, 237, 0.18), transparent 30%),
+      #080d1a;
+  }
+
+  .login-page {
+    background:
+      radial-gradient(circle at top left, rgba(59, 130, 246, 0.22), transparent 32%),
+      radial-gradient(circle at bottom right, rgba(124, 58, 237, 0.18), transparent 34%),
+      linear-gradient(135deg, #08111f 0%, #101827 100%);
+  }
+
+  .login-card,
+  .info-card,
+  .account-panel,
+  .tab-bar,
+  .course-preview-table {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: rgba(19, 28, 51, 0.72);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 18px 56px rgba(0, 0, 0, 0.28);
+  }
+
+  .top-glass-bar {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+    background: rgba(8, 13, 26, 0.66);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
+  }
+
+  .top-glass-bar .school-profile,
+  .top-glass-bar .account-trigger {
+    border-color: rgba(255, 255, 255, 0.14);
+    background: rgba(15, 23, 42, 0.78);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 14px 36px rgba(0, 0, 0, 0.26);
+  }
+
+  .top-glass-bar .school-profile:hover {
+    background: rgba(30, 41, 59, 0.86);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 18px 46px rgba(0, 0, 0, 0.32);
+  }
+
+  .top-glass-bar .school-profile strong {
+    color: #f8fafc;
+  }
+
+  .top-glass-bar .school-profile p {
+    color: #94a3b8;
+  }
+
+  .top-glass-bar .account-chevron {
+    color: #94a3b8;
+    filter: brightness(1.08);
+  }
+
+  .top-glass-bar .account-chevron.open {
+    color: #60a5fa;
+    filter: brightness(1.18) drop-shadow(0 6px 12px rgba(96, 165, 250, 0.18));
+  }
+
+  .top-glass-bar .tab-bar,
+  .top-glass-bar .top-tab-bar {
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(30, 41, 59, 0.82);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 12px 28px rgba(0, 0, 0, 0.32),
+      0 24px 56px rgba(0, 0, 0, 0.22);
+  }
+
+  .top-glass-bar .top-tab-bar::before {
+    background: linear-gradient(135deg, #3b82f6, #7c3aed);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.28),
+      0 8px 18px rgba(59, 130, 246, 0.32),
+      0 16px 36px rgba(124, 58, 237, 0.22);
+  }
+
+  .top-glass-bar .tab-bar button {
+    color: #cbd5e1;
+  }
+
+  .top-glass-bar .tab-bar button.active {
+    color: #ffffff;
+  }
+
+  .top-glass-bar .tab-bar button:not(.active):hover {
+    color: #93c5fd;
+  }
+
+  .page-title-section h1,
+  .login-card h1, 
+  .info-card h2,
+  .info-card h3,
+  .account-panel strong,
+  .course-preview-row strong,
+  .ad-revenue-card h2 {
+    color: #f8fafc;
+  }
+
+  .eyebrow,
+  .admin-subtitle,
+  .login-desc,
+  .login-tip,
+  .info-card p,
+  .school-profile p,
+  .account-panel p,
+  .tab-bar button,
+  th,
+  .clean-list small,
+  .course-preview-head,
+  .course-preview-row,
+  .course-preview-row span {
+    color: #94a3b8;
+  }
+
+  .clean-list li,
+  td,
+  .form-grid label {
+    color: #cbd5e1;
+  }
+
+  .clean-list li,
+  th,
+  td,
+  .account-panel-head,
+  .course-preview-head {
+    border-bottom-color: rgba(148, 163, 184, 0.18);
+  }
+
+  .login-card input,
+  .form-grid input,
+  .form-grid select,
+  .form-grid textarea {
+    border-color: rgba(148, 163, 184, 0.24);
+    color: #f8fafc;
+    background: rgba(15, 23, 42, 0.88);
+  }
+
+  .login-card input::placeholder,
+  .form-grid input::placeholder,
+  .form-grid textarea::placeholder {
+    color: #64748b;
+  }
+
+  .login-card input:focus,
+  .form-grid input:focus,
+  .form-grid select:focus,
+  .form-grid textarea:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.16);
+  }
+
+  .course-preview-row,
+  .account-actions button {
+    background: rgba(30, 41, 59, 0.72);
+  }
+
+  .account-actions button {
+    color: #cbd5e1;
+  }
+
+  .account-actions button:hover {
+    color: #93c5fd;
+    background: rgba(30, 64, 175, 0.26);
+  }
+
+  .account-actions .danger-action {
+    color: #fca5a5;
+    background: rgba(127, 29, 29, 0.34);
+  }
+
+  .account-actions .danger-action:hover {
+    color: #fecaca;
+    background: rgba(153, 27, 27, 0.44);
+  }
+
+  .clean-list span,
+  .status-on {
+    color: #93c5fd;
+    background: rgba(37, 99, 235, 0.24);
+  }
+
+  .notice-feed-item strong {
+    color: #e5e7eb;
+  }
+
+  .notice-type-badge.urgent {
+    color: #fecaca;
+    background: rgba(185, 28, 28, 0.28);
+  }
+
+  .notice-type-badge.important {
+    color: #fed7aa;
+    background: rgba(194, 65, 12, 0.26);
+  }
+
+  .notice-type-badge.daily {
+    color: #93c5fd;
+    background: rgba(37, 99, 235, 0.24);
+  }
+
+  .notice-type-badge.system {
+    color: #cbd5e1;
+    background: rgba(71, 85, 105, 0.45);
+  }
+
+  .student-online-card strong {
+    color: #60a5fa;
+  }
+
+  .mini-plan-list li {
+    color: #94a3b8;
+  }
+
+  .mini-plan-list li::before {
+    box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.12);
+  }
+
+  .pending-feature-card p:last-child {
+    color: #cbd5e1;
+    background: rgba(71, 85, 105, 0.44);
+  }
+
+  .status-off {
+    color: #cbd5e1;
+    background: rgba(71, 85, 105, 0.45);
+  }
+
+  .hero-card {
+    background:
+      radial-gradient(circle at top right, rgba(255, 255, 255, 0.13), transparent 34%),
+      linear-gradient(135deg, #1e40af, #4c1d95);
+  }
+
+  .top-toast {
+    border-color: rgba(134, 239, 172, 0.24);
+    color: #bbf7d0;
+    background: rgba(20, 83, 45, 0.92);
+    box-shadow:
+      0 18px 60px rgba(0, 0, 0, 0.36),
+      0 0 0 1px rgba(255, 255, 255, 0.06);
+  }
+
+  .top-toast.warning {
+    border-color: rgba(253, 230, 138, 0.26);
+    color: #fde68a;
+    background: rgba(120, 53, 15, 0.92);
+  }
+
+  .table-card {
+    scrollbar-color: rgba(148, 163, 184, 0.42) transparent;
+  }
+}

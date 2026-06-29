@@ -1,0 +1,640 @@
+/* ========== Campura Login Page ========== */
+
+.campura-login-page {
+  min-height: 100vh;
+  padding: 52px;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(59, 130, 246, 0.16), transparent 32%),
+    radial-gradient(circle at 78% 18%, rgba(124, 58, 237, 0.18), transparent 34%),
+    radial-gradient(circle at 52% 78%, rgba(14, 165, 233, 0.1), transparent 34%),
+    linear-gradient(135deg, #080d19 0%, #0d1324 48%, #111827 100%);
+  overflow: hidden;
+}
+
+.login-stage {
+  width: min(1180px, 100%);
+  min-height: 680px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.22fr) minmax(380px, 0.78fr);
+  gap: 26px;
+  align-items: stretch;
+}
+
+.login-brand-panel,
+.campura-login-card {
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 36px;
+  background: rgba(15, 23, 42, 0.52);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 24px 70px rgba(0, 0, 0, 0.26);
+  backdrop-filter: blur(30px) saturate(1.22);
+  overflow: hidden;
+}
+
+.login-brand-panel {
+  min-height: 610px;
+  padding: 40px;
+  display: grid;
+  grid-template-rows: auto 1fr auto auto;
+  color: #f8fafc;
+}
+
+.login-brand-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.07), transparent 34%),
+    radial-gradient(circle at 30% 35%, rgba(37, 99, 235, 0.14), transparent 24%),
+    radial-gradient(circle at 86% 80%, rgba(124, 58, 237, 0.18), transparent 36%);
+  pointer-events: none;
+}
+
+.login-panel-topline {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.login-version-pill {
+  padding: 9px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+}
+
+.login-visual-field {
+  position: relative;
+  z-index: 1;
+  min-height: 190px;
+  margin: 12px 0 8px;
+}
+
+.login-visual-field::before {
+  content: "";
+  position: absolute;
+  left: 16%;
+  top: 20%;
+  width: 360px;
+  height: 160px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.18), transparent 68%);
+  filter: blur(8px);
+}
+
+.visual-node {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  min-width: 92px;
+  height: 40px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  color: #cbd5e1;
+  background: rgba(15, 23, 42, 0.44);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 16px 34px rgba(0, 0, 0, 0.18);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.node-notice {
+  left: 4%;
+  top: 38%;
+}
+
+.node-map {
+  left: 38%;
+  top: 12%;
+}
+
+.node-calendar {
+  right: 8%;
+  top: 46%;
+}
+
+.visual-line {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(148, 163, 184, 0.36), transparent);
+  transform-origin: left center;
+}
+
+.line-a {
+  left: 16%;
+  top: 50%;
+  width: 260px;
+  transform: rotate(-13deg);
+}
+
+.line-b {
+  left: 48%;
+  top: 35%;
+  width: 250px;
+  transform: rotate(16deg);
+}
+
+.login-context-card {
+  display: grid;
+  gap: 6px;
+  margin: -8px 0 22px;
+  padding: 13px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.login-context-card span {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.login-context-card strong {
+  color: #e5e7eb;
+  font-size: 14px;
+}
+
+.brand-orb-wrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.brand-orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(2px);
+  opacity: 0.86;
+}
+
+.main-orb {
+  width: 420px;
+  height: 420px;
+  right: -120px;
+  bottom: -120px;
+  background:
+    radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.82), transparent 24%),
+    linear-gradient(135deg, rgba(37, 99, 235, 0.22), rgba(124, 58, 237, 0.18));
+}
+
+.sub-orb {
+  width: 180px;
+  height: 180px;
+  left: 18%;
+  top: 18%;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.08), rgba(37, 99, 235, 0.14));
+}
+
+.login-logo-space,
+.login-hero-copy,
+.login-meta-grid,
+.login-panel-topline,
+.login-visual-field {
+  position: relative;
+  z-index: 1;
+}
+
+.login-logo-space {
+  width: fit-content;
+  display: grid;
+  gap: 9px;
+}
+
+.login-logo-placeholder {
+  min-width: 148px;
+  min-height: 56px;
+  padding: 0 18px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  border-radius: 20px;
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.045);
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.login-logo-space span {
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.login-hero-copy {
+  align-self: end;
+  max-width: 680px;
+  padding-bottom: 24px;
+}
+
+.login-hero-copy h1 {
+  max-width: 620px;
+  margin: 0;
+  color: #f8fafc;
+  font-size: clamp(48px, 6.2vw, 78px);
+  line-height: 0.96;
+  letter-spacing: -0.078em;
+}
+
+.login-hero-copy p:last-child {
+  max-width: 560px;
+  margin: 22px 0 0;
+  color: #94a3b8;
+  font-size: 16px;
+  line-height: 1.78;
+  text-shadow: 0 1px 7px rgba(0, 0, 0, 0.48);
+}
+
+.login-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.login-meta-grid span {
+  padding: 12px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 12px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.campura-login-card {
+  align-self: stretch;
+  width: 100%;
+  min-height: 610px;
+  padding: 34px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-card-head {
+  margin-bottom: 24px;
+}
+
+.campura-login-card h2 {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 34px;
+  letter-spacing: -0.045em;
+}
+
+.campura-login-card label {
+  display: grid;
+  gap: 9px;
+  margin-bottom: 16px;
+  color: #94a3b8;
+  font-weight: 850;
+}
+
+.campura-login-card input[type="text"],
+.campura-login-card input[type="password"],
+.campura-login-card .password-field-wrap input {
+  width: 100%;
+  height: 52px;
+  padding: 0 16px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 18px;
+  color: #f8fafc;
+  background: rgba(15, 23, 42, 0.62);
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.password-field-wrap {
+  position: relative;
+  display: block;
+}
+
+.password-field-wrap input {
+  padding-right: 54px;
+}
+
+.password-eye-button {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  width: 34px !important;
+  height: 34px;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(148, 163, 184, 0.18) !important;
+  border-radius: 12px !important;
+  color: #cbd5e1 !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  transform: translateY(-50%);
+  font-size: 0;
+  line-height: 1;
+  transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.password-eye-button:hover {
+  color: #ffffff !important;
+  border-color: rgba(196, 181, 253, 0.34) !important;
+  background: rgba(124, 58, 237, 0.16) !important;
+  transform: translateY(-50%) scale(1.04);
+}
+
+.password-eye-button:active {
+  transform: translateY(-50%) scale(0.96);
+}
+
+.campura-login-card input:focus,
+.campura-login-card .password-field-wrap input:focus {
+  border-color: rgba(96, 165, 250, 0.72);
+  color: #f8fafc;
+  background: rgba(15, 23, 42, 0.92);
+  box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.16);
+}
+
+.login-options-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 2px 0 20px;
+}
+
+.remember-login {
+  display: inline-flex !important;
+  grid-template-columns: none !important;
+  align-items: center;
+  gap: 8px !important;
+  margin: 0 !important;
+  color: #64748b !important;
+  font-size: 13px;
+}
+
+.remember-login input {
+  width: 16px;
+  height: 16px;
+  accent-color: #111827;
+}
+
+.text-action {
+  width: auto !important;
+  margin-top: 0 !important;
+  padding: 0 !important;
+  border: none;
+  border-radius: 0 !important;
+  color: #94a3b8;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: 13px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.text-action:hover {
+  color: #c4b5fd;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.login-submit-button {
+  width: 100%;
+  height: 54px;
+  margin-top: 0;
+  border: none;
+  border-radius: 999px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  box-shadow: 0 18px 38px rgba(37, 99, 235, 0.22);
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.login-submit-button:hover {
+  color: #ffffff;
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, #1d4ed8, #6d28d9);
+  box-shadow: 0 22px 46px rgba(37, 99, 235, 0.28);
+}
+
+.campura-login-card .login-tip {
+  margin-top: 18px;
+  color: #94a3b8;
+  text-align: center;
+}
+
+
+@media (prefers-color-scheme: light) {
+  .campura-login-page {
+    background:
+      radial-gradient(circle at 18% 16%, rgba(37, 99, 235, 0.13), transparent 32%),
+      radial-gradient(circle at 78% 18%, rgba(124, 58, 237, 0.11), transparent 34%),
+      radial-gradient(circle at 52% 78%, rgba(14, 165, 233, 0.08), transparent 34%),
+      linear-gradient(135deg, #f8fafc 0%, #eef3f8 48%, #e8edf5 100%);
+  }
+
+  .login-brand-panel,
+  .campura-login-card {
+    border-color: rgba(255, 255, 255, 0.74);
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.78),
+      0 24px 70px rgba(15, 23, 42, 0.1);
+  }
+
+  .login-brand-panel {
+    color: #0f172a;
+  }
+
+  .login-brand-panel::before {
+    background:
+      linear-gradient(120deg, rgba(255, 255, 255, 0.62), transparent 34%),
+      radial-gradient(circle at 30% 35%, rgba(37, 99, 235, 0.12), transparent 24%),
+      radial-gradient(circle at 86% 80%, rgba(124, 58, 237, 0.13), transparent 36%);
+  }
+
+  .login-version-pill {
+    border-color: rgba(15, 23, 42, 0.08);
+    color: #64748b;
+    background: rgba(255, 255, 255, 0.48);
+  }
+
+  .login-logo-placeholder {
+    border-color: rgba(15, 23, 42, 0.16);
+    color: #0f172a;
+    background: rgba(255, 255, 255, 0.46);
+  }
+
+  .login-visual-field::before {
+    background: radial-gradient(circle, rgba(37, 99, 235, 0.14), transparent 68%);
+  }
+
+  .visual-node {
+    border-color: rgba(15, 23, 42, 0.08);
+    color: #475569;
+    background: rgba(255, 255, 255, 0.62);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.74),
+      0 16px 34px rgba(15, 23, 42, 0.08);
+  }
+
+  .visual-line {
+    background: linear-gradient(90deg, transparent, rgba(100, 116, 139, 0.24), transparent);
+  }
+
+  .login-hero-copy h1,
+  .campura-login-card h2 {
+    color: #0f172a;
+  }
+
+  .login-hero-copy p:last-child,
+  .campura-login-card label,
+  .login-context-card span,
+  .remember-login,
+  .text-action,
+  .campura-login-card .login-tip {
+    color: #64748b !important;
+  }
+
+  .login-hero-copy p:last-child {
+    text-shadow: 0 1px 12px rgba(255, 255, 255, 0.237);
+  }
+
+  .login-context-card {
+    border-color: rgba(15, 23, 42, 0.08);
+    background: rgba(255, 255, 255, 0.44);
+  }
+
+  .login-context-card strong {
+    color: #334155;
+  }
+
+  .login-meta-grid span {
+    border-color: rgba(226, 232, 240, 0.9);
+    color: #475569;
+    background: rgba(255, 255, 255, 0.54);
+  }
+
+  .campura-login-card input[type="text"],
+  .campura-login-card input[type="password"],
+  .campura-login-card .password-field-wrap input {
+    border-color: rgba(203, 213, 225, 0.92);
+    color: #0f172a;
+    background: rgba(255, 255, 255, 0.72);
+  }
+
+  .campura-login-card input:focus,
+  .campura-login-card .password-field-wrap input:focus {
+    border-color: rgba(37, 99, 235, 0.62);
+    color: #0f172a;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.16);
+  }
+
+  .password-eye-button {
+    border-color: rgba(148, 163, 184, 0.22) !important;
+    color: #64748b !important;
+    background: rgba(255, 255, 255, 0.58) !important;
+  }
+
+  .password-eye-button:hover {
+    color: #2563eb !important;
+    border-color: rgba(37, 99, 235, 0.28) !important;
+    background: rgba(219, 234, 254, 0.62) !important;
+  }
+
+  .login-submit-button {
+    color: #ffffff;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    box-shadow: 0 18px 38px rgba(37, 99, 235, 0.2);
+  }
+
+  .login-submit-button:hover {
+    color: #ffffff;
+    background: linear-gradient(135deg, #1d4ed8, #6d28d9);
+  }
+}
+
+@media (max-width: 920px) {
+  .campura-login-page {
+    padding: 24px;
+  }
+
+  .login-stage {
+    min-height: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .login-brand-panel {
+    min-height: 440px;
+  }
+
+  .campura-login-card {
+    min-height: auto;
+  }
+
+  .login-meta-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .campura-login-page {
+    padding: 16px;
+  }
+
+  .login-brand-panel,
+  .campura-login-card {
+    border-radius: 28px;
+  }
+
+  .login-brand-panel {
+    padding: 28px;
+    min-height: 380px;
+  }
+
+  .campura-login-card {
+    min-height: auto;
+    padding: 26px;
+  }
+
+  .login-options-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* ========== Login Password Icon ========== */
+.password-eye-button img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  opacity: 0.82;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.password-eye-button:hover img {
+  opacity: 1;
+  transform: scale(1.04);
+}

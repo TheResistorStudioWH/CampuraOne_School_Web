@@ -1,0 +1,11 @@
+{
+    "table": "院表",
+    "field": {
+    "ZH": "包含的系列表",
+    "EN": "DepartmentIDs"
+    },
+    "DepartmentIDs": [
+        "1234567",
+        "1212341"
+    ]
+}

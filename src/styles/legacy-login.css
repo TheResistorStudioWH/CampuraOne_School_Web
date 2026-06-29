@@ -1,0 +1,92 @@
+/* ========== Legacy Login Base ========== */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background:
+    radial-gradient(circle at top left, rgba(59, 130, 246, 0.18), transparent 32%),
+    linear-gradient(135deg, #f8fbff 0%, #e8eef7 100%);
+}
+
+.login-card {
+  width: min(420px, 100%);
+  padding: 40px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.16);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+.login-logo,
+.school-logo {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  color: white;
+  font-weight: 800;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.28);
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.login-card h1,
+.page-title-section h1 {
+  margin: 0;
+  color: #0f172a;
+}
+
+.login-desc,
+.login-tip {
+  color: #64748b;
+}
+
+.login-card label {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+  font-weight: 700;
+}
+
+.login-card input {
+  width: 100%;
+  border: 1px solid #dbe3ef;
+  border-radius: 14px;
+  padding: 13px 14px;
+  outline: none;
+  background: white;
+}
+
+.login-card input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.login-card button,
+.tab-bar button {
+  border: none;
+  cursor: pointer;
+}
+
+.login-card button {
+  width: 100%;
+  margin-top: 24px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  color: white;
+  font-weight: 800;
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  box-shadow: 0 16px 32px rgba(37, 99, 235, 0.25);
+}

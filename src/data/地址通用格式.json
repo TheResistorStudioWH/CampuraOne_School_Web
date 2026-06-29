@@ -1,0 +1,58 @@
+{
+  "version": "1.0.0",
+  "description": "国家-省/州/直辖市-城市/区县-具体地址的层级化地址数据模板",
+  "countries": [
+    {
+      "id": "CN",
+      "name": {
+        "zh": "中国",
+        "en": "China"
+      },
+      "administrativeDivisions": [
+        {
+          "id": "CN-ZJ",
+          "name": "浙江省",
+          "type": "province",
+          "children": [
+            {
+              "id": "CN-ZJ-HZ",
+              "name": "杭州市",
+              "type": "city",
+              "children": [
+                {
+                  "id": "CN-ZJ-HZ-XH",
+                  "name": "西湖区",
+                  "type": "district",
+                  "addresses": [
+                    {
+                      "id": "addr-zju-zijingang",
+                      "fullAddress": "余杭塘路866号"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "CN-BJ",
+          "name": "北京市",
+          "type": "municipality",
+          "children": [
+            {
+              "id": "CN-BJ-HDQ",
+              "name": "海淀区",
+              "type": "district",
+              "addresses": [
+                {
+                  "id": "addr-example-beijing",
+                  "fullAddress": "示例路1号"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

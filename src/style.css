@@ -1,0 +1,9 @@
+@import "./styles/base.css";
+@import "./styles/animations.css";
+@import "./styles/legacy-login.css";
+@import "./styles/dashboard.css";
+@import "./styles/operations-base.css";
+@import "./styles/dashboard-extra.css";
+@import "./styles/operations-refinement.css";
+@import "./styles/upload.css";
+@import "./styles/login.css";
