@@ -1,8 +1,14 @@
-import { useState } from 'react'
-import { schoolInfo, ads } from '../data/mockData.js'
+import { lazy, Suspense, useMemo, useState } from 'react'
+import { schoolInfo } from '../data/mockData.js'
+import {
+  buildAdDashboardStats,
+  buildAdvertisementViewModels,
+  cloneInitialAdReviews,
+} from '../data/adMockData.js'
 import DashboardPanel from '../components/DashboardPanel.jsx'
-import OperationsPanel from '../components/OperationsPanel.jsx'
 import chevronDownIcon from '../assets/icons/chevron.down.png'
+
+const OperationsPanel = lazy(() => import('../components/OperationsPanel.jsx'))
 
 function Dashboard({ onLogout }) {
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -10,8 +16,17 @@ function Dashboard({ onLogout }) {
   const [isContentLeaving, setIsContentLeaving] = useState(false)
   const [isAccountPanelOpen, setIsAccountPanelOpen] = useState(false)
   const [isAccountPanelClosing, setIsAccountPanelClosing] = useState(false)
-  const totalRevenue = ads.reduce((sum, item) => sum + item.price, 0)
-  const enabledAdsCount = ads.filter((item) => item.enabled).length
+  const [activeConsoleModule, setActiveConsoleModule] = useState('notice')
+  const [reviewRecords, setReviewRecords] = useState(cloneInitialAdReviews)
+  const [feedback, setFeedback] = useState(null)
+  const advertisements = useMemo(
+    () => buildAdvertisementViewModels(reviewRecords),
+    [reviewRecords],
+  )
+  const adStats = useMemo(
+    () => buildAdDashboardStats(advertisements),
+    [advertisements],
+  )
   const currentHour = new Date().getHours()
   const greeting = getGreeting(currentHour)
   const isAccountPanelVisible = isAccountPanelOpen || isAccountPanelClosing
@@ -45,6 +60,35 @@ function Dashboard({ onLogout }) {
     window.setTimeout(() => {
       onLogout()
     }, 180)
+  }
+
+  function showUnavailableFeedback(featureName) {
+    closeAccountPanel()
+    setFeedback(`${featureName}在当前演示版中暂未开放。`)
+
+    window.clearTimeout(showUnavailableFeedback.timer)
+    showUnavailableFeedback.timer = window.setTimeout(() => {
+      setFeedback(null)
+    }, 2600)
+  }
+
+  function handleReviewDecision(adID, status, reason = '') {
+    setReviewRecords((currentRecords) => currentRecords.map((review) => (
+      review.adID === adID
+        ? {
+            ...review,
+            status,
+            reason,
+            reviewedAt: status === 'pending' ? null : new Date().toISOString(),
+            reviewer: status === 'pending' ? null : schoolInfo.adminName,
+          }
+        : review
+    )))
+  }
+
+  function openConsoleModule(moduleName = 'notice') {
+    setActiveConsoleModule(moduleName)
+    switchTab('operations')
   }
 
   function switchTab(nextTab) {
@@ -114,9 +158,9 @@ function Dashboard({ onLogout }) {
                 </div>
 
                 <div className="account-actions">
-                  <button type="button">账号设置</button>
-                  <button type="button">学校资料</button>
-                  <button type="button">切换学校</button>
+                  <button type="button" onClick={() => showUnavailableFeedback('账号设置')}>账号设置</button>
+                  <button type="button" onClick={() => showUnavailableFeedback('学校资料')}>学校资料</button>
+                  <button type="button" onClick={() => showUnavailableFeedback('切换学校')}>切换学校</button>
                   <button
                     type="button"
                     className="danger-action"
@@ -132,7 +176,6 @@ function Dashboard({ onLogout }) {
       </header>
 
       <section className="page-title-section">
-        <p className="eyebrow">School Admin Console</p>
         <h1>{greeting}，欢迎回来</h1>
         <p className="admin-subtitle">{schoolInfo.name}管理后台</p>
       </section>
@@ -140,14 +183,28 @@ function Dashboard({ onLogout }) {
       <section className={`tab-content-shell ${isContentLeaving ? 'leaving' : 'entering'}`}>
         {displayedTab === 'dashboard' ? (
           <DashboardPanel
-            totalRevenue={totalRevenue}
-            enabledAdsCount={enabledAdsCount}
-            onOpenConsole={() => switchTab('operations')}
+            advertisements={advertisements}
+            adStats={adStats}
+            onOpenConsole={openConsoleModule}
           />
         ) : (
-          <OperationsPanel />
+          <Suspense fallback={<div className="console-loading-card">正在载入控制台模块…</div>}>
+            <OperationsPanel
+              activeModule={activeConsoleModule}
+              onModuleChange={setActiveConsoleModule}
+              advertisements={advertisements}
+              onReviewDecision={handleReviewDecision}
+            />
+          </Suspense>
         )}
       </section>
+
+      {feedback && (
+        <div className="top-toast warning" role="status" aria-live="polite">
+          <span className="toast-dot" />
+          <span>{feedback}</span>
+        </div>
+      )}
     </main>
   )
 }

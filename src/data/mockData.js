@@ -22,8 +22,8 @@ export const dashboardStats = {
   currentOnlineStudents: 1023,
   nextDashboardPlans: [
     '删除与撤销通知 课表 校历',
-    '广告位审核功能',
-    '广告位详细数据统计功能',
+    '接入学校端真实 API',
+    '增加操作日志与权限分级',
   ],
 }
 

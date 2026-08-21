@@ -4,6 +4,16 @@ import eyeVisibleIcon from '../assets/icons/eyes.left.png'
 
 function Login({ onLogin }) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
+  const [feedback, setFeedback] = useState(null)
+
+  function showForgotPasswordFeedback() {
+    setFeedback('密码找回在当前演示版中暂未开放。')
+
+    window.clearTimeout(showForgotPasswordFeedback.timer)
+    showForgotPasswordFeedback.timer = window.setTimeout(() => {
+      setFeedback(null)
+    }, 2600)
+  }
 
   return (
     <main className="login-page campura-login-page">
@@ -92,7 +102,7 @@ function Login({ onLogin }) {
               <input type="checkbox" defaultChecked />
               记住登录状态
             </label>
-            <button type="button" className="text-action">忘记密码？</button>
+            <button type="button" className="text-action" onClick={showForgotPasswordFeedback}>忘记密码？</button>
           </div>
 
           <button type="button" className="login-submit-button" onClick={onLogin}>登录控制台</button>
@@ -100,6 +110,13 @@ function Login({ onLogin }) {
           <p className="login-tip">当前为 UI 演示版，暂未连接服务器数据库。</p>
         </section>
       </section>
+
+      {feedback && (
+        <div className="top-toast warning" role="status" aria-live="polite">
+          <span className="toast-dot" />
+          <span>{feedback}</span>
+        </div>
+      )}
     </main>
   )
 }

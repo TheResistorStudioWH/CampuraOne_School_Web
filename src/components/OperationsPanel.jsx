@@ -1,11 +1,40 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { createPortal } from 'react-dom'
-import mammoth from 'mammoth/mammoth.browser'
-import TurndownService from 'turndown'
 import { departmentTargets } from '../data/mockData.js'
+import AdApprovalPanel from './AdApprovalPanel.jsx'
 
-function OperationsPanel() {
+const consoleModules = [
+    {
+        id: 'notice',
+        icon: 'notice',
+        label: '通知发布',
+        description: '短通知与重要通知',
+        shortcuts: [
+            { id: 'important', label: '发布重要通知' },
+            { id: 'short', label: '发布短通知' },
+        ],
+    },
+    {
+        id: 'ads',
+        icon: 'ads',
+        label: '广告审批',
+        description: '商户广告投放审核',
+        shortcuts: [
+            { id: 'pending', label: '待审批' },
+            { id: 'all', label: '全部' },
+        ],
+    },
+    { id: 'timetable', icon: 'timetable', label: '课表管理', description: '上传班级课表' },
+    { id: 'calendar', icon: 'calendar', label: '校历管理', description: '维护学年校历' },
+]
+
+function OperationsPanel({
+    activeModule = 'notice',
+    onModuleChange,
+    advertisements = [],
+    onReviewDecision,
+}) {
     const [toast, setToast] = useState(null)
     const [noticeType, setNoticeType] = useState('short')
     const [noticePublishMode, setNoticePublishMode] = useState('now')
@@ -16,6 +45,8 @@ function OperationsPanel() {
     const [noticeClassName, setNoticeClassName] = useState('all')
     const [noticeStudentId, setNoticeStudentId] = useState('')
     const [noticeContent, setNoticeContent] = useState('')
+    const [pendingNoticeShortcut, setPendingNoticeShortcut] = useState(null)
+    const [adStatusFilter, setAdStatusFilter] = useState('pending')
     const isImportantNotice = noticeType === 'important'
     const isScheduledNotice = noticePublishMode === 'scheduled'
     const isDepartmentTarget = noticeTargetMode === 'department'
@@ -23,6 +54,25 @@ function OperationsPanel() {
     const shouldShowClassSelector = isDepartmentTarget && noticeDepartment !== 'all'
     const [dragTarget, setDragTarget] = useState(null)
     // const selectedDepartment = departmentTargets.find((department) => department.id === noticeDepartment)
+
+    useEffect(() => {
+        if (activeModule !== 'notice' || !pendingNoticeShortcut) {
+            return undefined
+        }
+
+        const focusTimer = window.setTimeout(() => {
+            const scrollTarget = pendingNoticeShortcut === 'important'
+                ? document.querySelector('.docx-upload-line')
+                : document.querySelector('textarea[name="noticeContent"]')
+            const noticeTypeSelect = document.querySelector('select[name="noticeType"]')
+
+            scrollTarget?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            noticeTypeSelect?.focus({ preventScroll: true })
+            setPendingNoticeShortcut(null)
+        }, 60)
+
+        return () => window.clearTimeout(focusTimer)
+    }, [activeModule, pendingNoticeShortcut])
     
     function showToast(message, type = 'success') {
         setToast({ message, type, isLeaving: false })
@@ -233,6 +283,10 @@ function OperationsPanel() {
         }
 
         try {
+            const [{ default: mammoth }, { default: TurndownService }] = await Promise.all([
+                import('mammoth/mammoth.browser'),
+                import('turndown'),
+            ])
             const arrayBuffer = await file.arrayBuffer()
             const result = await mammoth.convertToHtml({ arrayBuffer })
             const turndownService = new TurndownService({
@@ -265,6 +319,20 @@ function OperationsPanel() {
         convertDocxFileToMarkdown(file)
     }
 
+    function handleModuleShortcut(moduleID, shortcutID) {
+        if (moduleID === 'notice') {
+            setNoticeType(shortcutID)
+            setPendingNoticeShortcut(shortcutID)
+            onModuleChange?.('notice')
+            return
+        }
+
+        if (moduleID === 'ads') {
+            setAdStatusFilter(shortcutID)
+            onModuleChange?.('ads')
+        }
+    }
+
     return (
         <>
             {toast && createPortal(
@@ -275,6 +343,47 @@ function OperationsPanel() {
                 document.body
             )}
 
+            <section className="console-workbench">
+                <aside className="console-module-rail" aria-label="控制台模块">
+                    <nav>
+                        {consoleModules.map((module) => (
+                            <div
+                                key={module.id}
+                                className={`module-nav-item ${activeModule === module.id ? 'active' : ''}`}
+                            >
+                                <button
+                                    type="button"
+                                    className="module-nav-button"
+                                    aria-current={activeModule === module.id ? 'page' : undefined}
+                                    onClick={() => onModuleChange?.(module.id)}
+                                >
+                                    <span className="module-index" aria-hidden="true">
+                                        <span className={`module-icon ${module.icon}`} />
+                                    </span>
+                                    <span className="module-copy">
+                                        <strong>{module.label}</strong>
+                                        <small>{module.description}</small>
+                                    </span>
+                                    {module.id === 'ads' && (
+                                        <span className="module-badge">
+                                            {advertisements.filter((item) => item.status === 'pending').length}
+                                        </span>
+                                    )}
+                                </button>
+
+                                <ModuleQuickControl
+                                    module={module}
+                                    onShortcut={handleModuleShortcut}
+                                />
+                            </div>
+                        ))}
+                    </nav>
+
+                    <p>本页数据仅用于界面演示，刷新或退出后审批状态会复位。</p>
+                </aside>
+
+                <div className="console-module-stage">
+                {activeModule === 'notice' && (
             <section className="operations-grid compact-operations-grid">
                 <article className="info-card operation-card notice-operation-card">
                     <div className="operation-card-head">
@@ -527,7 +636,21 @@ function OperationsPanel() {
                         </button>
                     </form>
                 </article>
+            </section>
+                )}
 
+                {activeModule === 'ads' && (
+                    <AdApprovalPanel
+                        advertisements={advertisements}
+                        onReviewDecision={onReviewDecision}
+                        statusFilter={adStatusFilter}
+                        onStatusFilterChange={setAdStatusFilter}
+                        showToast={showToast}
+                    />
+                )}
+
+                {activeModule === 'timetable' && (
+                <section className="operations-grid single-operation-grid">
                 <article className="info-card operation-card">
                     <p className="eyebrow">Timetable ICS</p>
                     <h3>上传课表</h3>
@@ -548,21 +671,40 @@ function OperationsPanel() {
                                 </select>
                             </label>
                             <label
-                                className={`full-row drop-upload-zone compact-drop-zone ${dragTarget === 'timetable' ? 'dragging' : ''}`}
+                                className={`full-row drop-upload-zone ${dragTarget === 'timetable' ? 'dragging' : ''}`}
                                 onDragOver={(event) => handleDragOver(event, 'timetable')}
                                 onDragLeave={(event) => handleDragLeave(event, 'timetable')}
                                 onDrop={handleDropTimetable}
                             >
-                                <span>课表文件</span>
-                                <strong>拖拽 .ics 课表到这里</strong>
-                                <small>也可以点击选择文件。</small>
+                                <div className="drop-illustration" aria-hidden="true">
+                                    <IcsFilePreviewCard className="main-card" showType />
+                                    <IcsFilePreviewCard className="side-card left-card" />
+                                    <IcsFilePreviewCard className="side-card right-card" />
+                                </div>
+
+                                <div className="drop-zone-copy">
+                                    <span>课表文件</span>
+                                    <strong>拖拽 .ics 课表到这里</strong>
+                                    <small>支持 iCalendar 课表文件，原有院系与班级选择保持不变。</small>
+                                </div>
+
+                                <div className="drop-zone-actions">
+                                    <span>或</span>
+                                    <strong>点击选择文件</strong>
+                                    <kbd>ICS</kbd>
+                                </div>
+
                                 <input name="timetableFile" type="file" accept=".ics" />
                             </label>
                         </div>
                         <button type="submit" className="primary-action">模拟上传课表</button>
                     </form>
                 </article>
+                </section>
+                )}
 
+                {activeModule === 'calendar' && (
+                <section className="operations-grid single-operation-grid">
                 <article className="info-card operation-card">
                     <p className="eyebrow">Calendar ICS</p>
                     <h3>上传校历</h3>
@@ -580,22 +722,94 @@ function OperationsPanel() {
                                 </select>
                             </label>
                             <label
-                                className={`full-row drop-upload-zone compact-drop-zone ${dragTarget === 'calendar' ? 'dragging' : ''}`}
+                                className={`full-row drop-upload-zone ${dragTarget === 'calendar' ? 'dragging' : ''}`}
                                 onDragOver={(event) => handleDragOver(event, 'calendar')}
                                 onDragLeave={(event) => handleDragLeave(event, 'calendar')}
                                 onDrop={handleDropCalendar}
                             >
-                                <span>校历文件</span>
-                                <strong>拖拽 .ics 校历到这里</strong>
-                                <small>也可以点击选择文件。</small>
+                                <div className="drop-illustration" aria-hidden="true">
+                                    <IcsFilePreviewCard className="main-card" showType />
+                                    <IcsFilePreviewCard className="side-card left-card" />
+                                    <IcsFilePreviewCard className="side-card right-card" />
+                                </div>
+
+                                <div className="drop-zone-copy">
+                                    <span>校历文件</span>
+                                    <strong>拖拽 .ics 校历到这里</strong>
+                                    <small>支持 iCalendar 校历文件，原有学年与学期设置保持不变。</small>
+                                </div>
+
+                                <div className="drop-zone-actions">
+                                    <span>或</span>
+                                    <strong>点击选择文件</strong>
+                                    <kbd>ICS</kbd>
+                                </div>
+
                                 <input name="calendarFile" type="file" accept=".ics" />
                             </label>
                         </div>
                         <button type="submit" className="primary-action">模拟上传校历</button>
                     </form>
                 </article>
+                </section>
+                )}
+                </div>
             </section>
         </>
+    )
+}
+
+function ModuleQuickControl({ module, onShortcut }) {
+    const [isOpen, setIsOpen] = useState(false)
+    const hasShortcuts = Boolean(module.shortcuts?.length)
+
+    if (!hasShortcuts) {
+        return (
+            <span className="module-quick-control empty" aria-hidden="true">
+                <span className="module-quick-trigger" />
+            </span>
+        )
+    }
+
+    return (
+        <div className={`module-quick-control ${isOpen ? 'open' : ''}`}>
+            <button
+                type="button"
+                className="module-quick-trigger"
+                aria-label={`${module.label}快捷操作`}
+                aria-expanded={isOpen}
+                onClick={() => setIsOpen((currentValue) => !currentValue)}
+            />
+
+            <div className="module-quick-menu" role="menu" aria-label={`${module.label}快捷操作`}>
+                {module.shortcuts.map((shortcut) => (
+                    <button
+                        key={shortcut.id}
+                        type="button"
+                        role="menuitem"
+                        onClick={() => {
+                            onShortcut(module.id, shortcut.id)
+                            setIsOpen(false)
+                        }}
+                    >
+                        {shortcut.label}
+                    </button>
+                ))}
+            </div>
+        </div>
+    )
+}
+
+function IcsFilePreviewCard({ className, showType = false }) {
+    return (
+        <span className={`drop-file-card ics-file-card ${className}`}>
+            {showType && <small>ICS</small>}
+            <span className="file-preview-lines">
+                <i />
+                <i />
+                <i />
+            </span>
+        </span>
     )
 }
 

@@ -67,6 +67,11 @@
   font-size: 16px;
   font-weight: 950;
   letter-spacing: 0.03em;
+  will-change: transform, opacity;
+  transition:
+    transform 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.24s ease,
+    box-shadow 0.24s ease;
 }
 
 .drop-file-card::before {
@@ -80,6 +85,41 @@
   border-left-color: transparent;
   border-bottom-color: transparent;
   border-radius: 6px;
+}
+
+.ics-file-card {
+  align-content: center;
+  gap: 8px;
+  padding: 16px 14px 12px;
+}
+
+.ics-file-card small {
+  justify-self: start;
+  color: rgba(91, 33, 182, 0.6);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+
+.file-preview-lines {
+  display: grid;
+  gap: 7px;
+  width: 100%;
+}
+
+.file-preview-lines i {
+  display: block;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(91, 33, 182, 0.2);
+}
+
+.file-preview-lines i:nth-child(2) {
+  width: 72%;
+}
+
+.file-preview-lines i:nth-child(3) {
+  width: 48%;
 }
 
 .main-card {
@@ -101,6 +141,30 @@
   top: 28px;
   transform: rotate(8deg) scale(0.72);
   opacity: 0.62;
+}
+
+.drop-upload-zone:hover .main-card,
+.drop-upload-zone.dragging .main-card {
+  transform: translateY(-10px) rotate(0deg) scale(1.04);
+  box-shadow:
+    0 22px 38px rgba(91, 33, 182, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.96);
+}
+
+.drop-upload-zone:hover .left-card,
+.drop-upload-zone.dragging .left-card {
+  opacity: 0.86;
+  transform: translate(-14px, -3px) rotate(-13deg) scale(0.78);
+}
+
+.drop-upload-zone:hover .right-card,
+.drop-upload-zone.dragging .right-card {
+  opacity: 0.86;
+  transform: translate(14px, -3px) rotate(13deg) scale(0.78);
+}
+
+.drop-upload-zone:active .main-card {
+  transform: translateY(-5px) rotate(0deg) scale(0.99);
 }
 
 .drop-zone-copy {
@@ -213,9 +277,25 @@
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
+  .ics-file-card small {
+    color: rgba(221, 214, 254, 0.62);
+  }
+
+  .file-preview-lines i {
+    background: rgba(221, 214, 254, 0.22);
+  }
+
   .left-card,
   .right-card {
     opacity: 0.48;
+  }
+
+  .drop-upload-zone:hover .main-card,
+  .drop-upload-zone.dragging .main-card {
+    box-shadow:
+      0 22px 38px rgba(0, 0, 0, 0.28),
+      0 0 30px rgba(124, 58, 237, 0.16),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14);
   }
 
   .drop-zone-copy span {
