@@ -27,22 +27,22 @@ function Login({ onLogin }) {
           <div className="login-panel-topline">
             <div className="login-logo-space">
               <div className="login-logo-placeholder">Campura</div>
-              <span>Logo Area</span>
+              <span>校园事务工作台</span>
             </div>
             <span className="login-version-pill">School Manager</span>
           </div>
 
           <div className="login-visual-field" aria-hidden="true">
-            <span className="visual-node node-notice">Notice</span>
-            <span className="visual-node node-map">Map</span>
-            <span className="visual-node node-calendar">Calendar</span>
+            <span className="visual-node node-notice">通知待办</span>
+            <span className="visual-node node-map">校园地图</span>
+            <span className="visual-node node-calendar">教学安排</span>
             <span className="visual-line line-a" />
             <span className="visual-line line-b" />
           </div>
 
           <div className="login-hero-copy">
             <p className="eyebrow">Campura One</p>
-              <h1>把校园运行，整理成清晰的一页。</h1>
+              <h1>校园里大小事，\n从这里接着办。</h1>
             <p>
               一个给学校端使用的轻量控制台：发布通知、维护校历课表、管理商户广告，并把校园服务的状态收束到同一个入口。
             </p>

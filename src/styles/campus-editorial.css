@@ -1,0 +1,75 @@
+/* Campus noticeboard: quieter paper surfaces, ink and small editorial accents.
+   Existing grid, dimensions and responsive rules remain owned by their modules. */
+:root {
+  --campus-paper: #f5f3ec;
+  --campus-ink: #263b36;
+  --campus-line: #d9ddd4;
+  --campus-surface: #fffefa;
+  --campus-hero: #e8eee2;
+  --campus-muted: #61716a;
+}
+body { background: var(--campus-paper); color: var(--campus-ink); }
+.top-glass-bar {
+  background: var(--campus-paper);
+  border-bottom: 1px solid var(--campus-line);
+  box-shadow: none;
+}
+.page-title-section h1 { font-weight: 650; letter-spacing: -.035em; color: var(--campus-ink); }
+.admin-subtitle { color: var(--campus-muted); }
+.info-card {
+  background: var(--campus-surface);
+  border: 1px solid var(--campus-line);
+  border-radius: 16px;
+  box-shadow: 0 3px 0 rgba(38, 59, 54, .035);
+  backdrop-filter: none;
+}
+.info-card.hero-card {
+  background: var(--campus-hero);
+  border-top: 4px solid #476b52;
+  color: var(--campus-ink);
+}
+.info-card .eyebrow { color: var(--campus-muted); letter-spacing: .09em; font-weight: 650; }
+.info-card h2, .info-card h3 { color: var(--campus-ink); }
+.card-title-row { padding-bottom: 10px; border-bottom: 1px solid var(--campus-line); }
+.school-profile {
+  background: var(--campus-surface);
+  border-color: var(--campus-line);
+  border-radius: 16px;
+  box-shadow: none;
+}
+.notice-feed-item { border-bottom: 1px dashed var(--campus-line); }
+.dashboard-section-heading { border-left: 3px solid #b57c4b; padding-left: 14px; }
+.info-card .icon-action { background: #eff2e9; color: #365745; box-shadow: none; }
+.top-glass-bar .top-tab-bar::before { background: #486a55; box-shadow: none; }
+.top-glass-bar .school-profile { background: var(--campus-surface); box-shadow: none; }
+.campura-login-page { background: var(--campus-paper); }
+.login-brand-panel { background: #263f34; border-radius: 20px; box-shadow: none; }
+.login-brand-panel::before { background: repeating-linear-gradient(0deg, transparent 0 39px, rgba(255,255,255,.04) 39px 40px); }
+.brand-orb-wrap, .login-visual-field::before { display: none; }
+.visual-node { border-radius: 7px; box-shadow: 3px 4px 0 rgba(0,0,0,.16); background: #e9e5cc; color: #263f34; }
+.node-notice { transform: rotate(-5deg); }
+.node-calendar { transform: rotate(4deg); }
+.campura-login-card { border-radius: 20px; box-shadow: none; }
+@media (prefers-color-scheme: dark) {
+  :root {
+    --campus-paper: #17201d;
+    --campus-surface: #212d27;
+    --campus-ink: #edf0e6;
+    --campus-line: #3b4940;
+    --campus-hero: #2b3d2e;
+    --campus-muted: #b5c4b5;
+  }
+  .info-card { color: var(--campus-ink); }
+  .info-card .icon-action { background: #334b3b; color: #deead8; }
+}
+button:focus-visible, a:focus-visible, input:focus-visible {
+  outline: 3px solid #47765c;
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+@media (max-width: 900px) {
+  /* Header becomes two rows at the existing breakpoint. */
+  .admin-shell { padding-top: 190px; }
+}
