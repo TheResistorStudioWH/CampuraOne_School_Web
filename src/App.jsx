@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Login from './pages/Login.jsx'
 import Dashboard from './pages/Dashboard.jsx'
+import { DemoProvider } from './demo/DemoContext.jsx'
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -30,7 +31,7 @@ function App() {
       {!isLoggedIn ? (
         <Login onLogin={() => switchPage(true, 'to-dashboard')} />
       ) : (
-        <Dashboard onLogout={() => switchPage(false, 'to-login')} />
+        <DemoProvider><Dashboard onLogout={() => switchPage(false, 'to-login')} /></DemoProvider>
       )}
     </div>
   )

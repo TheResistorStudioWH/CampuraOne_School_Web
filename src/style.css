@@ -8,4 +8,6 @@
 @import "./styles/upload.css";
 @import "./styles/login.css";
 @import "./styles/ads-console.css";
-@import "./styles/campus-editorial.css";
+@import "./styles/ios-theme.css";
+
+@import "./styles/demo-console.css";

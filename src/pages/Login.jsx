@@ -42,9 +42,9 @@ function Login({ onLogin }) {
 
           <div className="login-hero-copy">
             <p className="eyebrow">Campura One</p>
-              <h1>校园里大小事，\n从这里接着办。</h1>
+              <h1>校园事务，<br />从这里开始。</h1>
             <p>
-              一个给学校端使用的轻量控制台：发布通知、维护校历课表、管理商户广告，并把校园服务的状态收束到同一个入口。
+              发布通知、安排教学、审核广告。学校日常事务，集中管理。
             </p>
           </div>
 

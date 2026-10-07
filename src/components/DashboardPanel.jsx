@@ -1,10 +1,5 @@
-import {
-    calendarEvents,
-    dashboardStats,
-    notices,
-    timetable,
-} from '../data/mockData.js'
-import { adDailyMetrics } from '../data/adMockData.js'
+import { useSchoolDemo } from '../demo/DemoContext.jsx'
+import { noticeStatus, scopeLabel } from '../demo/schoolDemo.js'
 import { parseIcs } from '../data/utils/parseIcs.js'
 import plusIcon from '../assets/icons/plus.png'
 
@@ -12,14 +7,23 @@ const statusLabels = {
     pending: '待审批',
     approved: '已批准',
     rejected: '已驳回',
+    withdrawn: '已撤下',
 }
 
 function DashboardPanel({ advertisements, adStats, onOpenConsole }) {
-    const timetableCourses = parseIcs(timetable.icsText).slice(0, 5)
-    const { currentOnlineStudents, nextDashboardPlans } = dashboardStats
+    const { state } = useSchoolDemo()
+    const currentTerm = state.semesters.filter(t => t.startDate <= new Date().toISOString().slice(0,10)).sort((a,b)=>b.startDate.localeCompare(a.startDate))[0]
+    const table = state.timetables.find(t => t.semesterID === currentTerm?.semesterID)
+    const timetableCourses = parseIcs(state.fileContents[`timetable:${table?.baseVersionID}`]).slice(0, 5)
+    const calendarEvents = parseIcs(state.fileContents[`calendar:${currentTerm?.calendarVersionID}`]).slice(0,5).map(e=>({id:e.id,title:e.title,time:`${e.date} · ${e.timeText}`}))
+    const currentFile = state.timetableVersions.find(v=>v.versionID===table?.baseVersionID)
+    const adDailyMetrics = adStats.dailyMetrics
+    const nextDashboardPlans = ['通知、审批与教学安排可演示', '修改保留在本次登录中', '刷新或退出后恢复示例数据']
+    const currentOnlineStudents = adStats.currentOnlineStudents
+    const recentNotices = state.announcements.slice(0, 5).map(n => ({ id:n.announceID, title:n.title, type:['日常','紧急','重要'][n.type], date:n.startTime.slice(0,10), time:noticeStatus(n)==='revoked'?'已撤回':n.startTime.slice(11,16) }))
     const pendingAdvertisements = advertisements.filter((item) => item.status === 'pending')
     const maxTrendValue = Math.max(
-        ...adDailyMetrics.map((item) => Math.max(item.submitted, item.approved + item.rejected, item.pending)),
+        ...adDailyMetrics.map((item) => item.approved + item.rejected),
         1,
     )
     const maxRejectionCount = Math.max(...adStats.rejectionReasons.map((item) => item.count), 1)
@@ -37,15 +41,15 @@ function DashboardPanel({ advertisements, adStats, onOpenConsole }) {
             <section className="dashboard-grid">
                 <article className="info-card hero-card">
                     <p className="eyebrow">今日信息</p>
-                    <h2>2026 年 8 月 19 日</h2>
-                    <p>秋季开学准备周 · 当前有 {adStats.pendingCount} 条广告等待审批</p>
+                    <h2>{new Intl.DateTimeFormat('zh-CN', { timeZone: 'Asia/Shanghai', year: 'numeric', month: 'long', day: 'numeric' }).format(new Date())}</h2>
+                    <p>演示工作台 · 当前有 {adStats.pendingCount} 条广告等待审批</p>
                 </article>
 
                 <article className="info-card">
                     <p className="eyebrow">最近通知</p>
                     <h3>通知动态</h3>
                     <ul className="clean-list">
-                        {notices.map((notice) => (
+                        {recentNotices.map((notice) => (
                             <li key={notice.id} className="notice-feed-item">
                                 <span className={getNoticeTypeClass(notice.type)}>{notice.type}</span>
                                 <strong>{notice.title}</strong>
@@ -84,8 +88,8 @@ function DashboardPanel({ advertisements, adStats, onOpenConsole }) {
                 <article className="info-card action-preview-card timetable-preview-card">
                     <div className="card-title-row">
                         <div>
-                            <p className="eyebrow">随机课表</p>
-                            <h3>{timetable.name}</h3>
+                            <p className="eyebrow">课表预览</p>
+                            <h3>{table ? `${table.classID} 班课表` : '尚无课表'}</h3>
                         </div>
                         <button
                             type="button"
@@ -97,8 +101,8 @@ function DashboardPanel({ advertisements, adStats, onOpenConsole }) {
                             <img src={plusIcon} alt="" aria-hidden="true" />
                         </button>
                     </div>
-                    <p>{timetable.department} · {timetable.className}</p>
-                    <p>{timetable.uploadDate} 上传 · {timetable.fileType}</p>
+                    <p>{table ? scopeLabel(table) : '上传常规课表后显示预览'}</p>
+                    <p>{currentFile ? `${currentFile.originalName} · 文件内容预览` : 'ICS 文件'}</p>
                     <div className="course-preview-table">
                         <div className="course-preview-head">
                             <span>课程</span>
@@ -124,15 +128,15 @@ function DashboardPanel({ advertisements, adStats, onOpenConsole }) {
                         <div className="compact-insight-main">
                             <div>
                                 <h3>当前在线人数</h3>
-                                <p>学生端当前活跃访问人数</p>
+                                <p>实时在线统计尚未接入</p>
                             </div>
-                            <strong>{currentOnlineStudents.toLocaleString()}</strong>
+                            <strong>{currentOnlineStudents === null ? '—' : currentOnlineStudents.toLocaleString()}</strong>
                         </div>
                     </article>
 
                     <article className="info-card compact-insight-card next-plan-card">
-                        <p className="eyebrow">下次规划更新</p>
-                        <h3>仪表盘 V1.1</h3>
+                        <p className="eyebrow">工作台环境</p>
+                        <h3>本地演示</h3>
                         <ul className="mini-plan-list">
                             {nextDashboardPlans.map((plan) => (
                                 <li key={plan}>{plan}</li>
@@ -144,47 +148,47 @@ function DashboardPanel({ advertisements, adStats, onOpenConsole }) {
 
             <section className="dashboard-section-heading">
                 <div>
-                    <p className="eyebrow">Advertisement Operations</p>
+                    <p className="eyebrow">商户投放</p>
                     <h2>广告运营概览</h2>
-                    <p>以下均为关系化虚构数据，审批结果仅在当前登录会话中同步。</p>
+                    <p>演示数据 · 审批结果仅在本次会话中保存</p>
                 </div>
                 <button type="button" className="section-link-button" onClick={() => onOpenConsole('ads')}>
-                    进入广告审批
+                    查看全部
                     <span aria-hidden="true">→</span>
                 </button>
             </section>
 
             <section className="ad-kpi-grid" aria-label="广告审批关键指标">
                 <KpiCard label="待审数量" value={adStats.pendingCount} unit="条" tone="blue" note="需要学校管理员处理" />
-                <KpiCard label="平均等待时间" value={adStats.averageWaitingHours} unit="小时" tone="violet" note="按当前待审记录计算" />
+                <KpiCard label="平均等待时间" value={adStats.averageWaitingHours} unit="小时" tone="violet" note="从首次提交起计算" />
                 <KpiCard label="审批通过率" value={adStats.approvalRate} unit="%" tone="green" note="不包含仍待审广告" />
-                <KpiCard label="本周处理量" value={adStats.processedThisWeek} unit="条" tone="orange" note="批准与驳回合计" />
+                <KpiCard label="本周处理量" value={adStats.processedThisWeek} unit="条" tone="orange" note="最近七天的审批操作次数" />
             </section>
 
             <section className="ad-analytics-grid">
                 <article className="info-card ad-trend-card">
                     <div className="card-title-row">
                         <div>
-                            <p className="eyebrow">7 Day Trend</p>
+                            <p className="eyebrow">审批统计</p>
                             <h3>七日审批趋势</h3>
                         </div>
                         <div className="trend-legend" aria-label="图例">
-                            <span className="submitted">提交</span>
-                            <span className="processed">已处理</span>
-                            <span className="pending">待审</span>
+                            <span className="submitted">批准</span>
+                            <span className="processed">驳回</span>
+                            <span className="pending">合计</span>
                         </div>
                     </div>
 
-                    <div className="trend-chart" role="img" aria-label="最近七天广告提交、处理和待审趋势">
+                    <div className="trend-chart" role="img" aria-label="最近七天广告批准与驳回操作趋势">
                         {adDailyMetrics.map((metric) => {
                             const processed = metric.approved + metric.rejected
 
                             return (
                                 <div className="trend-day" key={metric.date}>
                                     <div className="trend-bars">
-                                        <span className="submitted" style={{ height: `${(metric.submitted / maxTrendValue) * 100}%` }} title={`提交 ${metric.submitted}`} />
-                                        <span className="processed" style={{ height: `${(processed / maxTrendValue) * 100}%` }} title={`已处理 ${processed}`} />
-                                        <span className="pending" style={{ height: `${(metric.pending / maxTrendValue) * 100}%` }} title={`待审 ${metric.pending}`} />
+                                        <span className="submitted" style={{ height: `${(metric.approved / maxTrendValue) * 100}%` }} title={`批准 ${metric.approved}`} />
+                                        <span className="processed" style={{ height: `${(metric.rejected / maxTrendValue) * 100}%` }} title={`驳回 ${metric.rejected}`} />
+                                        <span className="pending" style={{ height: `${(processed / maxTrendValue) * 100}%` }} title={`合计 ${processed}`} />
                                     </div>
                                     <small>{metric.date.slice(5).replace('-', '/')}</small>
                                 </div>
@@ -196,28 +200,48 @@ function DashboardPanel({ advertisements, adStats, onOpenConsole }) {
                 <article className="info-card pending-ad-card">
                     <div className="card-title-row">
                         <div>
-                            <p className="eyebrow">Review Queue</p>
-                            <h3>待审摘要</h3>
+                            <p className="eyebrow">待办</p>
+                            <h3>待审批广告</h3>
                         </div>
                         <span className="queue-count">{pendingAdvertisements.length}</span>
                     </div>
 
                     <div className="pending-ad-list">
                         {pendingAdvertisements.slice(0, 3).map((item) => (
-                            <button type="button" key={item.adID} onClick={() => onOpenConsole('ads')}>
-                                <span className={`mini-ad-type ${item.type === 'L' ? 'large' : 'small'}`}>{item.type}</span>
-                                <span>
+                            <button
+                                type="button"
+                                className="pending-ad-item"
+                                key={item.adID}
+                                onClick={() => onOpenConsole('ads', item.adID)}
+                                aria-label={`查看${item.mainShop?.shopName}的广告申请`}
+                            >
+                                <span className="pending-ad-heading">
                                     <strong>{item.mainShop?.shopName}</strong>
-                                    <small>{item.saleEvent?.saleRule}</small>
+                                    <span className="pending-ad-chevron" aria-hidden="true">›</span>
                                 </span>
-                                <time>{formatRelativeWaiting(item.review?.submittedAt)}</time>
+                                <span className="pending-ad-promotion">{item.saleEvent?.saleRule}</span>
+                                <span className="pending-ad-metadata">
+                                    <span className="ad-meta placement" title={item.type === 'L' ? '首页横幅' : '方形卡片'} aria-label={item.type === 'L' ? '首页横幅' : '方形卡片'}>
+                                        <AdMetadataIcon kind={item.type === 'L' ? 'banner' : 'square'} />
+                                    </span>
+                                    <span className="ad-meta price" title={`报价 ¥${item.order?.price}`} aria-label={`报价 ${item.order?.price} 元`}>
+                                        <AdMetadataIcon kind="price" /><span>{item.order?.price}</span>
+                                    </span>
+                                    <span className="ad-meta waiting" title={`已等待 ${formatRelativeWaiting(item.review?.submittedAt)}`} aria-label={`已等待 ${formatRelativeWaiting(item.review?.submittedAt)}`}>
+                                        <AdMetadataIcon kind="clock" /><span>{formatRelativeWaiting(item.review?.submittedAt)}</span>
+                                    </span>
+                                    <span className="ad-meta period" title="投放日期" aria-label={`投放 ${formatShortDate(item.startTime)}至${formatShortDate(item.endTime)}`}>
+                                        <AdMetadataIcon kind="calendar" /><span>{formatShortDate(item.startTime)}–{formatShortDate(item.endTime)}</span>
+                                    </span>
+                                </span>
                             </button>
                         ))}
+                        {pendingAdvertisements.length === 0 && <p className="pending-ad-empty">所有申请已处理</p>}
                     </div>
                 </article>
 
                 <article className="info-card rejection-card">
-                    <p className="eyebrow">Rejected Reasons</p>
+                    <p className="eyebrow">审批反馈</p>
                     <h3>驳回原因分布</h3>
                     <div className="rejection-reason-list">
                         {adStats.rejectionReasons.map((item) => (
@@ -237,9 +261,9 @@ function DashboardPanel({ advertisements, adStats, onOpenConsole }) {
 
             <section className="ad-commercial-grid">
                 <article className="info-card revenue-card ad-revenue-card">
-                    <p className="eyebrow">广告订单金额</p>
-                    <h2>¥{adStats.totalRevenue.toLocaleString()}</h2>
-                    <p>共 {advertisements.length} 笔虚构广告订单，不代表真实结算收入。</p>
+                    <p className="eyebrow">广告报价总额</p>
+                    <h2>¥{adStats.quoteTotal.toLocaleString()}</h2>
+                    <p>共 {advertisements.length} 笔演示报价 · 付款与到账尚未接入。</p>
                 </article>
 
                 <article className="info-card commercial-stat-card">
@@ -252,20 +276,17 @@ function DashboardPanel({ advertisements, adStats, onOpenConsole }) {
                 </article>
 
                 <article className="info-card commercial-stat-card">
-                    <p className="eyebrow">七日触达</p>
-                    <h3>{adStats.impressions.toLocaleString()} 次曝光</h3>
-                    <div>
-                        <span>点击 <strong>{adStats.clicks.toLocaleString()}</strong></span>
-                        <span>点击率 <strong>{((adStats.clicks / adStats.impressions) * 100).toFixed(1)}%</strong></span>
-                    </div>
+                    <p className="eyebrow">投放数据</p>
+                    <h3>尚未接入</h3>
+                    <div><span>曝光 <strong>—</strong></span><span>点击 <strong>—</strong></span><span>到账 <strong>—</strong></span></div>
                 </article>
             </section>
 
             <section className="info-card table-card advertisement-order-table">
                 <div className="section-title">
                     <div>
-                        <p className="eyebrow">Advertisement Orders</p>
-                        <h3>商户广告位购买信息</h3>
+                        <p className="eyebrow">订单记录</p>
+                        <h3>商户投放与报价</h3>
                     </div>
                     <span className="table-record-count">{advertisements.length} 条模拟记录</span>
                 </div>
@@ -273,9 +294,9 @@ function DashboardPanel({ advertisements, adStats, onOpenConsole }) {
                     <thead>
                         <tr>
                             <th>商户</th>
-                            <th>促销事件</th>
-                            <th>订单</th>
-                            <th>价格</th>
+                            <th>报价方案</th>
+                            <th>报价单</th>
+                            <th>报价</th>
                             <th>投放周期</th>
                             <th>广告位</th>
                             <th>审批状态</th>
@@ -304,11 +325,22 @@ function DashboardPanel({ advertisements, adStats, onOpenConsole }) {
     )
 }
 
+function AdMetadataIcon({ kind }) {
+    const paths = {
+        banner: <><rect x="2" y="6" width="20" height="12" rx="3" /><path d="M6 10h8M6 14h4" /></>,
+        square: <><rect x="4" y="4" width="16" height="16" rx="4" /><path d="M8 9h8M8 13h5" /></>,
+        price: <><path d="m7 4 5 7 5-7M7 12h10M7 16h10M12 11v9" /></>,
+        clock: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>,
+        calendar: <><rect x="3" y="5" width="18" height="16" rx="3" /><path d="M7 3v4M17 3v4M3 10h18M8 14h3M8 17h6" /></>,
+    }
+    return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[kind]}</svg>
+}
+
 function KpiCard({ label, value, unit, tone, note }) {
     return (
         <article className={`info-card ad-kpi-card ${tone}`}>
             <span>{label}</span>
-            <strong>{value}<small>{unit}</small></strong>
+            <strong>{value ?? '—'}<small>{unit}</small></strong>
             <p>{note}</p>
         </article>
     )
@@ -324,12 +356,16 @@ function formatDate(value) {
     }).format(new Date(value))
 }
 
+function formatShortDate(value) {
+    return value ? new Intl.DateTimeFormat('zh-CN', { month: 'numeric', day: 'numeric' }).format(new Date(value)) : '长期'
+}
+
 function formatRelativeWaiting(value) {
     if (!value) return '刚刚'
 
     const hours = Math.max(
         0,
-        Math.round((new Date('2026-08-19T12:00:00+08:00').getTime() - new Date(value).getTime()) / 3_600_000),
+        Math.round((Date.now() - new Date(value).getTime()) / 3_600_000),
     )
 
     return hours < 24 ? `${hours} 小时` : `${Math.floor(hours / 24)} 天`
