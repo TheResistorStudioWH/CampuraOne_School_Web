@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { useSchoolDemo } from '../demo/DemoContext.jsx'
 import { createPortal } from 'react-dom'
 import AdApprovalPanel from './AdApprovalPanel.jsx'
 import NoticeDemoPanel from './NoticeDemoPanel.jsx'
@@ -13,6 +14,7 @@ const consoleModules = [
   { id:'calendar',icon:'calendar',label:'校历管理',description:'校历与临时安排',shortcuts:[['temporary','发布临时安排'],['history','版本记录']] },
 ]
 export default function OperationsPanel({activeModule='notice',onModuleChange,advertisements=[],onReviewDecision,requestedAdID}) {
+  const {isDemo}=useSchoolDemo()
   const [toast,setToast]=useState(null)
   const [noticeShortcut,setNoticeShortcut]=useState('short')
   const [noticeKey,setNoticeKey]=useState(0)
@@ -38,7 +40,7 @@ export default function OperationsPanel({activeModule='notice',onModuleChange,ad
           </button>
           <HoverQuickControl label={`${module.label}快捷操作`}>{module.shortcuts.map(([id,label])=><button key={id} type="button" data-close-quick onClick={()=>shortcut(module.id,id)}>{label}</button>)}</HoverQuickControl>
         </div>)}
-      </nav><p>本地演示 · 数据仅保留在本次登录中。未连接服务器。</p></aside>
+      </nav><p>{isDemo?'本地演示 · 数据仅保留在本次登录中。未连接服务器。':'已连接学校管理服务，操作会保存到服务器。'}</p></aside>
       <div className="console-module-stage">
         {activeModule==='notice'&&<NoticeDemoPanel key={noticeKey} initialType={noticeShortcut} showToast={showToast} />}
         {activeModule==='ads'&&<AdApprovalPanel key={requestedAdID||'ads'} initialAdID={requestedAdID} advertisements={advertisements} onReviewDecision={onReviewDecision} statusFilter={adStatusFilter} onStatusFilterChange={setAdStatusFilter} showToast={showToast} />}

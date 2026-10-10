@@ -1,5 +1,5 @@
 import { lazy, Suspense, useMemo, useState } from 'react'
-import { schoolInfo } from '../data/mockData.js'
+import { dashboardStats } from '../api/schoolClient.js'
 import { useSchoolDemo } from '../demo/DemoContext.jsx'
 import { advertisementViewModels, dashboardAdStats } from '../demo/schoolDemo.js'
 import DashboardPanel from '../components/DashboardPanel.jsx'
@@ -14,16 +14,16 @@ function Dashboard({ onLogout }) {
   const [isContentLeaving, setIsContentLeaving] = useState(false)
   const [requestedAdID, setRequestedAdID] = useState(null)
   const [activeConsoleModule, setActiveConsoleModule] = useState('notice')
-  const { state, execute } = useSchoolDemo()
-  const school = { ...schoolInfo, name: state.profile.schoolName, logo: state.profile.schoolLogo }
+  const { state, execute, isDemo, refresh, busy, refreshing } = useSchoolDemo()
+  const school = { name: state.profile.schoolName, logo: state.profile.schoolLogo }
   const [accountPage, setAccountPage] = useState(null)
   const advertisements = useMemo(
     () => advertisementViewModels(state.advertisements),
     [state.advertisements],
   )
   const adStats = useMemo(
-    () => dashboardAdStats(state),
-    [state],
+    () => isDemo ? dashboardAdStats(state) : dashboardStats(state.dashboard),
+    [state, isDemo],
   )
   const currentHour = new Date().getHours()
   const greeting = getGreeting(currentHour)
@@ -76,6 +76,7 @@ function Dashboard({ onLogout }) {
             </button>
           </nav>
 
+          {!isDemo && <button className="quiet-action" disabled={busy||refreshing} onClick={refresh}>刷新数据</button>}
           <AccountMenu
             school={school}
             onAction={setAccountPage}

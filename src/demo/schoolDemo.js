@@ -12,8 +12,8 @@ export const demoStudents = [{ studentID: 101, studentNumber: '0000101', student
 export const emptyTarget = () => ({ allSchool: true, compoundIDs: [], departmentIDs: [], classScopes: [], studentIDs: [] })
 export const shanghaiISO = value => value ? `${value}:00+08:00`.replace(/:00:00\+/, ':00+') : new Date().toISOString()
 export const scopeKey = s => `${s.compoundID}/${s.departmentID}/${s.classID}`
-export function scopeLabel(s) {
-  return `${demoDirectory.compounds.find(c => c.compoundID === s.compoundID)?.compoundName} · ${demoDirectory.departments.find(d => d.departmentID === s.departmentID)?.departmentName} · ${s.classID} 班`
+export function scopeLabel(s, directory = demoDirectory) {
+  return `${directory.compounds.find(c => c.compoundID === s.compoundID)?.compoundName} · ${directory.departments.find(d => d.departmentID === s.departmentID)?.departmentName} · ${s.classID} 班`
 }
 const calendarText = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Campura//Demo//ZH\r\nBEGIN:VEVENT\r\nUID:demo-opening\r\nSUMMARY:秋季开学\r\nDTSTART;TZID=Asia/Shanghai:20260907T090000\r\nDTEND;TZID=Asia/Shanghai:20260907T100000\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n'
 export function createDemoState() {
@@ -186,7 +186,7 @@ export function appendCalendarEvent(text, event) {
   if (!event.title?.trim() || !validDate(event.start) || !validDate(event.end) || Date.parse(event.end) <= Date.parse(event.start)) fail('请填写安排标题与有效起止时间。')
   const escape = s => s.replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;')
   const stamp = s => s.replace(/[-:]/g, '') + '00'
-  const entry = `BEGIN:VEVENT\r\nUID:${crypto.randomUUID()}@campura.demo\r\nSUMMARY:${escape(event.title)}\r\nDTSTART;TZID=Asia/Shanghai:${stamp(event.start)}\r\nDTEND;TZID=Asia/Shanghai:${stamp(event.end)}\r\nLOCATION:${escape(event.location || '')}\r\nEND:VEVENT\r\n`
+  const entry = `BEGIN:VEVENT\r\nUID:${(globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`)}@campura.demo\r\nSUMMARY:${escape(event.title)}\r\nDTSTART;TZID=Asia/Shanghai:${stamp(event.start)}\r\nDTEND;TZID=Asia/Shanghai:${stamp(event.end)}\r\nLOCATION:${escape(event.location || '')}\r\nEND:VEVENT\r\n`
   return text.replace(/END:VCALENDAR\s*$/, `${entry}END:VCALENDAR\r\n`)
 }
 

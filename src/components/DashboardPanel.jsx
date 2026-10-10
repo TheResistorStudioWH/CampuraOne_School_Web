@@ -11,16 +11,16 @@ const statusLabels = {
 }
 
 function DashboardPanel({ advertisements, adStats, onOpenConsole }) {
-    const { state } = useSchoolDemo()
+    const { state, isDemo } = useSchoolDemo()
     const currentTerm = state.semesters.filter(t => t.startDate <= new Date().toISOString().slice(0,10)).sort((a,b)=>b.startDate.localeCompare(a.startDate))[0]
-    const table = state.timetables.find(t => t.semesterID === currentTerm?.semesterID)
-    const timetableCourses = parseIcs(state.fileContents[`timetable:${table?.baseVersionID}`]).slice(0, 5)
-    const calendarEvents = parseIcs(state.fileContents[`calendar:${currentTerm?.calendarVersionID}`]).slice(0,5).map(e=>({id:e.id,title:e.title,time:`${e.date} · ${e.timeText}`}))
+    const table = isDemo ? state.timetables.find(t => t.semesterID === currentTerm?.semesterID) : state.dashboard.timetable
+    const timetableCourses = isDemo ? parseIcs(state.fileContents[`timetable:${table?.baseVersionID}`]).slice(0, 5) : (state.dashboard.timetable?.events||[]).map(e=>({id:e.uid,title:e.title,date:e.startTime.slice(0,10),weekday:'',timeText:`${e.startTime.slice(11,16)}–${e.endTime.slice(11,16)}`,teacher:e.location||'—'}))
+    const calendarEvents = isDemo ? parseIcs(state.fileContents[`calendar:${currentTerm?.calendarVersionID}`]).slice(0,5).map(e=>({id:e.id,title:e.title,time:`${e.date} · ${e.timeText}`})) : state.dashboard.calendarEvents.map(e=>({id:e.uid,title:e.title,time:`${e.startTime.slice(0,10)} · ${e.startTime.slice(11,16)}–${e.endTime.slice(11,16)}`}))
     const currentFile = state.timetableVersions.find(v=>v.versionID===table?.baseVersionID)
     const adDailyMetrics = adStats.dailyMetrics
-    const nextDashboardPlans = ['通知、审批与教学安排可演示', '修改保留在本次登录中', '刷新或退出后恢复示例数据']
+    const nextDashboardPlans = isDemo ? ['通知、审批与教学安排可演示', '修改保留在本次登录中', '刷新或退出后恢复示例数据'] : ['学校资料与教学安排来自服务器', '审批与通知操作保存到服务器', '付款、曝光和在线统计尚未接入']
     const currentOnlineStudents = adStats.currentOnlineStudents
-    const recentNotices = state.announcements.slice(0, 5).map(n => ({ id:n.announceID, title:n.title, type:['日常','紧急','重要'][n.type], date:n.startTime.slice(0,10), time:noticeStatus(n)==='revoked'?'已撤回':n.startTime.slice(11,16) }))
+    const recentNotices = (isDemo?state.announcements.slice(0, 5):state.dashboard.notices).map(n => ({ id:n.announceID, title:n.title, type:['日常','紧急','重要'][n.type], date:n.startTime?.slice(0,10)||'—', time:noticeStatus(n)==='revoked'?'已撤回':n.startTime?.slice(11,16)||'—' }))
     const pendingAdvertisements = advertisements.filter((item) => item.status === 'pending')
     const maxTrendValue = Math.max(
         ...adDailyMetrics.map((item) => item.approved + item.rejected),
@@ -42,7 +42,7 @@ function DashboardPanel({ advertisements, adStats, onOpenConsole }) {
                 <article className="info-card hero-card">
                     <p className="eyebrow">今日信息</p>
                     <h2>{new Intl.DateTimeFormat('zh-CN', { timeZone: 'Asia/Shanghai', year: 'numeric', month: 'long', day: 'numeric' }).format(new Date())}</h2>
-                    <p>演示工作台 · 当前有 {adStats.pendingCount} 条广告等待审批</p>
+                    <p>{isDemo?'演示工作台':'学校工作台'} · 当前有 {adStats.pendingCount} 条广告等待审批</p>
                 </article>
 
                 <article className="info-card">
@@ -101,14 +101,14 @@ function DashboardPanel({ advertisements, adStats, onOpenConsole }) {
                             <img src={plusIcon} alt="" aria-hidden="true" />
                         </button>
                     </div>
-                    <p>{table ? scopeLabel(table) : '上传常规课表后显示预览'}</p>
-                    <p>{currentFile ? `${currentFile.originalName} · 文件内容预览` : 'ICS 文件'}</p>
+                    <p>{table ? scopeLabel(table,state.directory) : '上传常规课表后显示预览'}</p>
+                    <p>{isDemo?(currentFile ? `${currentFile.originalName} · 文件内容预览` : 'ICS 文件'):'当前生效课表 · 后续课程'}</p>
                     <div className="course-preview-table">
                         <div className="course-preview-head">
                             <span>课程</span>
                             <span>日期</span>
                             <span>时间</span>
-                            <span>教师</span>
+                            <span>{isDemo?'教师':'地点'}</span>
                         </div>
 
                         {timetableCourses.map((course) => (
@@ -136,7 +136,7 @@ function DashboardPanel({ advertisements, adStats, onOpenConsole }) {
 
                     <article className="info-card compact-insight-card next-plan-card">
                         <p className="eyebrow">工作台环境</p>
-                        <h3>本地演示</h3>
+                        <h3>{isDemo?'本地演示':'已连接服务器'}</h3>
                         <ul className="mini-plan-list">
                             {nextDashboardPlans.map((plan) => (
                                 <li key={plan}>{plan}</li>
@@ -150,7 +150,7 @@ function DashboardPanel({ advertisements, adStats, onOpenConsole }) {
                 <div>
                     <p className="eyebrow">商户投放</p>
                     <h2>广告运营概览</h2>
-                    <p>演示数据 · 审批结果仅在本次会话中保存</p>
+                    <p>{isDemo?'演示数据 · 审批结果仅在本次会话中保存':'服务器数据 · 审批结果同步保存'}</p>
                 </div>
                 <button type="button" className="section-link-button" onClick={() => onOpenConsole('ads')}>
                     查看全部
@@ -263,7 +263,7 @@ function DashboardPanel({ advertisements, adStats, onOpenConsole }) {
                 <article className="info-card revenue-card ad-revenue-card">
                     <p className="eyebrow">广告报价总额</p>
                     <h2>¥{adStats.quoteTotal.toLocaleString()}</h2>
-                    <p>共 {advertisements.length} 笔演示报价 · 付款与到账尚未接入。</p>
+                    <p>共 {advertisements.length} 笔{isDemo?'演示':''}报价 · 付款与到账尚未接入。</p>
                 </article>
 
                 <article className="info-card commercial-stat-card">
@@ -288,7 +288,7 @@ function DashboardPanel({ advertisements, adStats, onOpenConsole }) {
                         <p className="eyebrow">订单记录</p>
                         <h3>商户投放与报价</h3>
                     </div>
-                    <span className="table-record-count">{advertisements.length} 条模拟记录</span>
+                    <span className="table-record-count">{advertisements.length} 条{isDemo?'模拟':''}记录</span>
                 </div>
                 <table>
                     <thead>

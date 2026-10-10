@@ -10,7 +10,8 @@ const allowedActions={pending:['reject','approve'],approved:['withdraw'],rejecte
 const formatDate=value=>value?new Intl.DateTimeFormat('zh-CN',{timeZone:'Asia/Shanghai',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(value)):'长期'
 
 export default function AdApprovalPanel({advertisements,initialAdID=null,onReviewDecision,statusFilter,onStatusFilterChange,showToast}) {
-  const {state}=useSchoolDemo()
+  const {state,isDemo,history:loadHistory}=useSchoolDemo()
+  const [historyBusy,setHistoryBusy]=useState(false)
   const [query,setQuery]=useState(''),[sortBy,setSortBy]=useState('status'),[direction,setDirection]=useState('primary')
   const [selectedID,setSelectedID]=useState(initialAdID),[editor,setEditor]=useState(null),[reason,setReason]=useState('')
   const counts=Object.fromEntries(options.map(([id])=>[id,id==='all'?advertisements.length:advertisements.filter(a=>a.status===id).length]))
@@ -21,10 +22,10 @@ export default function AdApprovalPanel({advertisements,initialAdID=null,onRevie
   const selected=rows.find(a=>a.adID===selectedID)||rows[0]
   function select(id){setSelectedID(id);setEditor(null);setReason('')}
   function changeFilter(id){onStatusFilterChange(id);select(null)}
-  function commit(action) {
+  async function commit(action) {
     if(!selected)return
     try {
-      onReviewDecision(selected.adID,action,reason.trim())
+      await onReviewDecision(selected.adID,action,reason.trim())
       showToast(`已${{approve:'批准投放',reject:'驳回',withdraw:'撤下',resubmit:'重新送审',edit_reason:'更新原因',undo_rejection:'撤销驳回'}[action]} · AD-${selected.adID}`)
       if(action!=='edit_reason')setSelectedID(rows.find(a=>a.adID!==selected.adID)?.adID||null)
       setEditor(null);setReason('')
@@ -36,7 +37,7 @@ export default function AdApprovalPanel({advertisements,initialAdID=null,onRevie
   }
   const history=state.logs.filter(l=>l.resource==='advertisement'&&l.resourceID===selected?.adID)
   return <section className="approval-module" aria-labelledby="ad-approval-heading">
-    <header className="module-heading-row"><div><p className="eyebrow">商户投放 · 演示</p><h2 id="ad-approval-heading">广告审批</h2><p>查看素材、核对投放，完成审核。</p></div><div className="approval-summary-pill"><strong>{counts.pending}</strong><span>条待处理</span></div></header>
+    <header className="module-heading-row"><div><p className="eyebrow">商户投放{isDemo?' · 演示':''}</p><h2 id="ad-approval-heading">广告审批</h2><p>查看素材、核对投放，完成审核。</p></div><div className="approval-summary-pill"><strong>{counts.pending}</strong><span>条待处理</span></div></header>
     <div className="approval-toolbar">
       <div className="approval-filter-group" role="group" aria-label="审批状态筛选" data-active-status={statusFilter} style={{'--filter-total':options.length,'--filter-index':options.findIndex(([id])=>id===statusFilter)}}>
         <span className="approval-filter-indicator" aria-hidden="true" />
@@ -60,16 +61,16 @@ export default function AdApprovalPanel({advertisements,initialAdID=null,onRevie
       <section className="approval-detail-panel" aria-live="polite">
         {selected?<>
           <div className="review-detail-heading"><div><p className="eyebrow">AD-{selected.adID}</p><h3>{selected.shopName}</h3></div><span className={`review-status ${selected.status}`}>{labels[selected.status]}</span></div>
-          <figure className={`ad-creative-preview ${selected.type==='L'?'large':'small'}`} aria-label="演示广告素材"><div className="creative-copy"><strong>{selected.packageName}</strong><small>DEMO · 素材占位</small></div></figure>
+          <figure className={`ad-creative-preview ${selected.type==='L'?'large':'small'}`} aria-label="广告素材">{isDemo?<div className="creative-copy"><strong>{selected.packageName}</strong><small>DEMO · 素材占位</small></div>:<a href={selected.img} target="_blank" rel="noreferrer" aria-label="打开原始广告素材"><img src={selected.img} alt={`${selected.shopName}的广告素材`} /></a>}</figure>
           <dl className="review-facts">
             <div><dt>投放位置</dt><dd>{selected.type==='L'?'首页横幅 · 3:1':'方形卡片 · 1:1'}</dd></div>
             <div><dt>投放周期</dt><dd>{formatDate(selected.startTime)} — {formatDate(selected.endTime)}</dd></div>
             <div><dt>报价</dt><dd className="detail-price">{selected.amount===null?'未报价':`¥${Number(selected.amount).toLocaleString()}`}<small>付款尚未接入</small></dd></div>
           </dl>
           {selected.reason&&<div className={`review-history ${selected.status}`}><span>{selected.status==='withdrawn'?'撤下原因':'驳回原因'}</span><strong>{selected.reason}</strong></div>}
-          <details className="review-secondary-details"><summary>申请信息与操作记录</summary><dl><div><dt>报价单</dt><dd>{selected.orderNumber||'未关联'}</dd></div><div><dt>首次提交</dt><dd>{formatDate(selected.submittedAt)}</dd></div><div><dt>促销引用</dt><dd>SALE-{selected.saleID}</dd></div><div><dt>素材地址</dt><dd className="creative-source">{selected.img}</dd></div></dl><div className="review-audit-list">{history.map(l=><p key={l.logID}><span>{actionLabels[l.action]||l.action}</span><time>{formatDate(l.createdAt)}</time></p>)}{!history.length&&<p>尚无演示操作记录</p>}</div></details>
+          <details className="review-secondary-details"><summary>申请信息与操作记录</summary>{!isDemo&&<button type="button" className="quiet-action" disabled={historyBusy} onClick={async()=>{setHistoryBusy(true);try{await loadHistory('advertisements',selected.adID)}catch(e){showToast(e.message,'warning')}finally{setHistoryBusy(false)}}}>{historyBusy?'正在读取…':'读取操作记录'}</button>}<dl><div><dt>报价单</dt><dd>{selected.orderNumber||'未关联'}</dd></div><div><dt>首次提交</dt><dd>{formatDate(selected.submittedAt)}</dd></div><div><dt>促销引用</dt><dd>SALE-{selected.saleID}</dd></div><div><dt>素材地址</dt><dd className="creative-source">{selected.img}</dd></div></dl><div className="review-audit-list">{history.map(l=><p key={l.logID}><span>{actionLabels[l.action]||l.action}</span><time>{formatDate(l.createdAt)}</time></p>)}{!history.length&&<p>{isDemo?'尚无演示操作记录':'点击读取操作记录'}</p>}</div></details>
           <div className="review-decision-bar">
-            {editor?<div className="review-reason-form"><label>{editor==='withdraw'?'撤下原因（必填）':editor==='edit_reason'?'驳回原因':'驳回原因（选填）'}<textarea aria-label="审核原因" rows={2} maxLength={2000} value={reason} onChange={e=>setReason(e.target.value)} placeholder="填写可供商户改进或核对的原因" /></label><div className="approval-actions"><button className="quiet-action" onClick={()=>setEditor(null)}>取消</button><button className="confirm-reject-action" disabled={editor==='withdraw'&&!reason.trim()} onClick={()=>commit(editor)}>{editor==='edit_reason'?'保存原因':actionLabels[editor]}</button></div></div>:<><span className="review-decision-hint">{selected.status==='pending'?'核对素材与时间后处理':selected.status==='withdrawn'?'重新送审后需再次审批':'操作将保留在演示记录中'}</span><div className="approval-actions">{allowedActions[selected.status].map(action=><button key={action} type="button" className={['approve','resubmit'].includes(action)?'primary-approve-action':'quiet-action'} onClick={()=>act(action)}>{actionLabels[action]}</button>)}</div></>}
+            {editor?<div className="review-reason-form"><label>{editor==='withdraw'?'撤下原因（必填）':editor==='edit_reason'?'驳回原因':'驳回原因（选填）'}<textarea aria-label="审核原因" rows={2} maxLength={2000} value={reason} onChange={e=>setReason(e.target.value)} placeholder="填写可供商户改进或核对的原因" /></label><div className="approval-actions"><button className="quiet-action" onClick={()=>setEditor(null)}>取消</button><button className="confirm-reject-action" disabled={editor==='withdraw'&&!reason.trim()} onClick={()=>commit(editor)}>{editor==='edit_reason'?'保存原因':actionLabels[editor]}</button></div></div>:<><span className="review-decision-hint">{selected.status==='pending'?'核对素材与时间后处理':selected.status==='withdrawn'?'重新送审后需再次审批':'操作将保留在审核记录中'}</span><div className="approval-actions">{allowedActions[selected.status].map(action=><button key={action} type="button" className={['approve','resubmit'].includes(action)?'primary-approve-action':'quiet-action'} onClick={()=>act(action)}>{actionLabels[action]}</button>)}</div></>}
           </div>
         </>:<div className="approval-detail-empty"><strong>暂无可审核内容</strong><p>选择一条申请查看素材和投放信息。</p></div>}
       </section>

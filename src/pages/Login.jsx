@@ -2,12 +2,17 @@ import { useState } from 'react'
 import eyeHiddenIcon from '../assets/icons/eyes.right.png'
 import eyeVisibleIcon from '../assets/icons/eyes.left.png'
 
-function Login({ onLogin }) {
+function Login({ onLogin, live = false, sessionFeedback }) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const [feedback, setFeedback] = useState(null)
 
+  const [busy, setBusy] = useState(false)
+  async function submit(e) {
+    e.preventDefault(); const f = new FormData(e.currentTarget); setBusy(true);setFeedback(null)
+    try { await onLogin({loginName:f.get('loginName'),password:f.get('password'),rememberMe:f.get('rememberMe')==='on'}) } catch(error) {setFeedback(error.message)} finally {setBusy(false)}
+  }
   function showForgotPasswordFeedback() {
-    setFeedback('密码找回在当前演示版中暂未开放。')
+    setFeedback('请联系平台管理员处理账号找回。')
 
     window.clearTimeout(showForgotPasswordFeedback.timer)
     showForgotPasswordFeedback.timer = window.setTimeout(() => {
@@ -56,7 +61,7 @@ function Login({ onLogin }) {
           </div>
         </div>
 
-        <section className="login-card campura-login-card">
+        <form className="login-card campura-login-card" onSubmit={submit}>
           <div className="login-card-head">
             <p className="eyebrow">School Admin Console</p>
             <h2>欢迎回来</h2>
@@ -65,12 +70,12 @@ function Login({ onLogin }) {
 
           <div className="login-context-card">
             <span>当前入口</span>
-            <strong>测试学校 · 管理员</strong>
+            <strong>{live ? '学校管理员' : '测试学校 · 演示'}</strong>
           </div>
 
           <label>
             账号
-            <input type="text" placeholder="请输入管理员账号" defaultValue="admin" />
+            <input name="loginName" required autoComplete="username" type="text" placeholder="请输入管理员账号" defaultValue={live ? '' : 'admin'} />
           </label>
 
           <label>
@@ -79,7 +84,7 @@ function Login({ onLogin }) {
               <input
                 type={isPasswordVisible ? 'text' : 'password'}
                 placeholder="请输入密码"
-                defaultValue="123456"
+                name="password" required autoComplete="current-password" defaultValue={live ? '' : '123456'}
               />
               <button
                 type="button"
@@ -99,22 +104,22 @@ function Login({ onLogin }) {
 
           <div className="login-options-row">
             <label className="remember-login">
-              <input type="checkbox" defaultChecked />
+              <input name="rememberMe" type="checkbox" defaultChecked />
               记住登录状态
             </label>
             <button type="button" className="text-action" onClick={showForgotPasswordFeedback}>忘记密码？</button>
           </div>
 
-          <button type="button" className="login-submit-button" onClick={onLogin}>登录控制台</button>
+          <button type="submit" disabled={busy} className="login-submit-button">{busy ? '正在登录…' : '登录控制台'}</button>
 
-          <p className="login-tip">当前为 UI 演示版，暂未连接服务器数据库。</p>
-        </section>
+          <p className="login-tip">{live ? '账号由平台开通，请使用学校管理员账号登录。' : '当前为本地演示，修改仅在本次会话中保留。'}</p>
+        </form>
       </section>
 
-      {feedback && (
+      {(feedback || sessionFeedback) && (
         <div className="top-toast warning" role="status" aria-live="polite">
           <span className="toast-dot" />
-          <span>{feedback}</span>
+          <span>{feedback || sessionFeedback}</span>
         </div>
       )}
     </main>

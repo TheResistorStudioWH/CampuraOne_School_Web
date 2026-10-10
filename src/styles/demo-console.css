@@ -130,3 +130,19 @@ button:disabled { opacity:.4; cursor:default; }
   .demo-dialog-inner { padding:20px; }
 }
 @media (prefers-reduced-motion:reduce) { .module-selection-indicator { transition:none; } }
+.school-workspace-lock {border:0; padding:0; margin:0; min-width:0;}
+.connection-state {max-width:640px; margin:15vh auto; padding:32px; text-align:center;}
+.connection-banner {position:sticky;top:0;z-index:30;padding:12px 24px;background:#fff0d9;color:#573b18;}
+.connection-banner button {margin-left:16px;}
+.file-import {margin:16px 0;min-width:0;}
+.file-import input {max-width:100%;}
+.import-error {color:#a43747;line-height:1.6;}
+.import-summary {display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--muted);}
+.import-warnings {padding-left:20px;color:var(--muted);font-size:13px;line-height:1.7;}
+.import-preview {max-height:340px;overflow:auto;}
+.import-actions {display:flex;flex-wrap:wrap;gap:10px; margin:12px 0;}
+.demo-markdown {overflow:auto;}
+.demo-markdown table {width:100%;border-collapse:collapse;}
+.demo-markdown th,.demo-markdown td {padding:8px 12px;border-bottom:1px solid #8883;text-align:left;}
+.ad-creative-preview img {width:100%;height:100%;object-fit:contain;}
+.school-workspace-lock:disabled .primary-action {opacity:.6;}
