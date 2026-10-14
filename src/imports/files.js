@@ -2,7 +2,7 @@ const MiB=1024*1024
 export function validateFile(file,kind) {
   if(!file)throw new Error('请选择文件。')
   const extension=file.name.split('.').pop().toLowerCase()
-  const rules={notice:{extensions:['docx','md','markdown','txt'],max:10*MiB},ics:{extensions:['ics'],max:2*MiB},logo:{extensions:['jpg','jpeg','png','webp'],max:5*MiB}}
+  const rules={notice:{extensions:['docx','md','markdown','txt','pdf'],max:10*MiB},ics:{extensions:['ics'],max:2*MiB},logo:{extensions:['jpg','jpeg','png','webp'],max:5*MiB}}
   const rule=rules[kind]
   if(extension==='doc'&&kind==='notice')throw new Error('旧版 .doc 无法在浏览器可靠转换。请在 Word 中另存为 .docx 后导入；不要只修改扩展名。')
   if(!rule.extensions.includes(extension))throw new Error(`请选择 ${rule.extensions.join(' / ')} 文件。`)
@@ -37,6 +37,10 @@ export function inspectDocx(bytes) {
   }
   if(!document)throw new Error('文件没有 Word 正文，无法转换。')
 }
+export function inspectPDF(bytes) {
+  const signature=new TextDecoder('ascii').decode(new Uint8Array(bytes,0,Math.min(5,bytes.byteLength)))
+  if(signature!=='%PDF-')throw new Error('文件内容不是有效的 PDF。')
+}
 export function inspectICS(text) {
   const lines=text.replace(/\n[ \t]/g,'').trim().split('\n')
   if(lines[0]!=='BEGIN:VCALENDAR'||lines.at(-1)!=='END:VCALENDAR')throw new Error('文件需包含完整的 VCALENDAR。')
@@ -66,6 +70,48 @@ export async function readImport(file,kind) {
   }
   const bytes=await file.arrayBuffer()
   if(kind==='ics'){const text=decodeText(bytes);const {events}=inspectICS(text);return {file,text,summary:`${events} 个原始事件 · ${(file.size/1024).toFixed(1)} KB`,warnings:['循环、时区、学期范围和临时整周覆盖由服务器进行最终校验。']}}
+  if(extension==='pdf') {
+    inspectPDF(bytes)
+    const pdfjs=await import('pdfjs-dist')
+    pdfjs.GlobalWorkerOptions.workerSrc=new URL('pdfjs-dist/build/pdf.worker.min.mjs',import.meta.url).toString()
+    const loadingTask=pdfjs.getDocument({data:new Uint8Array(bytes),isEvalSupported:false,useSystemFonts:true})
+    let document
+    try {
+      document=await loadingTask.promise
+      if(document.numPages>200)throw new Error('PDF 超过 200 页，请拆分后分别导入。')
+      const pages=[]
+      for(let pageNumber=1;pageNumber<=document.numPages;pageNumber++) {
+        const page=await document.getPage(pageNumber)
+        const content=await page.getTextContent()
+        const lines=[];let line='',previous=null
+        for(const item of content.items) {
+          if(!('str' in item)||!item.str)continue
+          if(previous&&previous.hasEOL){lines.push(line.trim());line='';previous=null}
+          if(previous&&!/\s$/.test(line)&&!/^\s/.test(item.str)) {
+            const previousRight=previous.transform[4]+previous.width
+            const gap=item.transform[4]-previousRight
+            const fontSize=Math.hypot(item.transform[2],item.transform[3])
+            if(gap>Math.max(1.5,fontSize*.18))line+=' '
+          }
+          line+=item.str
+          previous=item
+          if(item.hasEOL){lines.push(line.trim());line='';previous=null}
+        }
+        if(line.trim())lines.push(line.trim())
+        pages.push(lines.filter(Boolean).join('\n'))
+        if(pages.join('\n\n').length>100000)throw new Error('PDF 转换后的正文超过 100000 字符，请拆分文件或缩短内容。')
+      }
+      const markdown=pages.filter(Boolean).join('\n\n').trim()
+      if(!markdown)throw new Error('PDF 中没有可提取的文字；如果这是扫描件，请先进行 OCR 后再导入。')
+      return {file,markdown,summary:`${document.numPages} 页 · ${markdown.length.toLocaleString()} 字符 · 已转换为 Markdown`,warnings:['PDF 转换提取文字并保留分页换行；扫描图片和复杂版式不会自动 OCR。请检查预览后再替换或追加。']}
+    } catch(error) {
+      if(error.name==='PasswordException')throw new Error('PDF 已加密，请先解除密码保护后再导入。',{cause:error})
+      throw error
+    } finally {
+      if(document)await document.destroy()
+      else await loadingTask.destroy()
+    }
+  }
   let markdown,warnings=[]
   if(extension==='docx') {
     inspectDocx(bytes)

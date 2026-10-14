@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import chevronMark from '../assets/account-chevron.svg'
 
 const actions = [
   { label: '账号设置', icon: 'person', page: 'account' },
@@ -18,22 +19,45 @@ function MenuIcon({ name }) {
 
 export default function AccountMenu({ school, onAction, onLogout }) {
   const [isOpen, setIsOpen] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
+  const [isClosing, setIsClosing] = useState(false)
+  const closeTimer = useRef(null)
   const wrapRef = useRef(null)
   const triggerRef = useRef(null)
   const panelRef = useRef(null)
+
+  const closeMenu = useCallback(() => {
+    if (!isMounted || isClosing) return
+    window.clearTimeout(closeTimer.current)
+    setIsOpen(false)
+    setIsClosing(true)
+    closeTimer.current = window.setTimeout(() => {
+      setIsMounted(false)
+      setIsClosing(false)
+    }, 170)
+  }, [isMounted, isClosing])
 
   useEffect(() => {
     if (!isOpen) return
     panelRef.current?.querySelector('button')?.focus()
     function dismiss(event) {
-      if (!wrapRef.current?.contains(event.target)) setIsOpen(false)
+      if (!wrapRef.current?.contains(event.target)) closeMenu()
     }
     document.addEventListener('pointerdown', dismiss)
     return () => document.removeEventListener('pointerdown', dismiss)
-  }, [isOpen])
+  }, [isOpen, closeMenu])
+
+  useEffect(() => () => window.clearTimeout(closeTimer.current), [])
+
+  function openMenu() {
+    window.clearTimeout(closeTimer.current)
+    setIsMounted(true)
+    setIsClosing(false)
+    setIsOpen(true)
+  }
 
   function closeAndFocus() {
-    setIsOpen(false)
+    closeMenu()
     triggerRef.current?.focus()
   }
 
@@ -53,16 +77,16 @@ export default function AccountMenu({ school, onAction, onLogout }) {
 
   return (
     <div className="school-profile-wrap" ref={wrapRef} onKeyDown={handleKeys}
-      onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setIsOpen(false) }}>
+      onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) closeMenu() }}>
       <button ref={triggerRef} type="button" className="school-profile account-trigger"
         aria-expanded={isOpen} aria-controls="account-actions" aria-label="账号管理"
-        onClick={() => setIsOpen((value) => !value)}>
+        onClick={() => isOpen ? closeMenu() : openMenu()}>
         <span className="school-logo">{school.logo ? <img src={school.logo} alt="" /> : school.logoText}</span>
         <span className="account-identity"><strong>{school.adminName}</strong><small>{school.name}</small></span>
-        <span className={`account-disclosure ${isOpen ? 'open' : ''}`} aria-hidden="true">⌄</span>
+        <span className={`account-disclosure ${isOpen ? 'open' : ''}`} aria-hidden="true"><img src={chevronMark} alt="" /></span>
       </button>
-      {isOpen && (
-        <div ref={panelRef} className="account-panel" id="account-actions" aria-label="账号操作">
+      {isMounted && (
+        <div ref={panelRef} className={`account-panel ${isClosing ? 'closing' : ''}`} id="account-actions" aria-label="账号操作" inert={isClosing}>
           <div className="account-menu-caption">管理</div>
           <div className="account-actions">
             {actions.map((action) => (
@@ -73,7 +97,7 @@ export default function AccountMenu({ school, onAction, onLogout }) {
           </div>
           <div className="account-menu-divider" />
           <div className="account-actions">
-            <button type="button" className="danger-action" onClick={onLogout}><MenuIcon name="logout" /><span>退出登录</span></button>
+            <button type="button" className="danger-action" onClick={() => { closeMenu(); onLogout() }}><MenuIcon name="logout" /><span>退出登录</span></button>
           </div>
         </div>
       )}

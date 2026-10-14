@@ -49,7 +49,7 @@ export default function ScheduleDemoPanel({ kind, mode, onModeChange, showToast 
   }
   async function download(version) {try{downloadICS(await original(isTable?'timetable':'calendar',version),version.originalName)}catch(e){showToast(e.message,'warning')}}
   return <article className="info-card schedule-demo-panel">
-    <div className="operation-card-head"><div><p className="eyebrow">教学安排{isDemo?' · 演示':''}</p><h2>{isTable ? '课表管理' : '校历管理'}</h2></div></div>
+    <div className="operation-card-head"><h2>{isTable ? '课表管理' : '校历管理'}</h2></div>
     <div ref={segmentsRef} className="demo-segments" role="group" aria-label={isTable ? '课表操作' : '校历操作'}><SlidingSelection containerRef={segmentsRef} activeKey={mode} />{modeOptions.map(([id,label]) => <button key={id} data-selection-key={id} type="button" className={mode === id ? 'active' : ''} onClick={() => { onModeChange(id); setFile(null) }}>{label}</button>)}</div>
     <div className="form-grid schedule-scope">
       <label>学期<select value={semesterID} onChange={e => { setSemesterID(Number(e.target.value)); setWeeks([]); setFile(null) }}>{state.semesters.map(t => <option key={t.semesterID} value={t.semesterID}>{t.schoolYear} · {t.season === 'autumn' ? '秋季' : '春季'}</option>)}</select></label>

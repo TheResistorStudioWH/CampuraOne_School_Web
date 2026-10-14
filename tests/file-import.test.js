@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {validateFile,decodeText,inspectICS,inspectDocx,markdownTable} from '../src/imports/files.js'
+import {validateFile,decodeText,inspectICS,inspectDocx,inspectPDF,markdownTable} from '../src/imports/files.js'
 test('file checks distinguish legacy doc, wrong extension, empty file and limits',()=>{
   assert.throws(()=>validateFile({name:'old.doc',size:10},'notice'),/另存为/)
   assert.throws(()=>validateFile({name:'bad.exe',size:10},'ics'),/请选择/)
@@ -21,6 +21,12 @@ test('ICS checks balanced structure and supports deliberate empty weeks',()=>{
 test('renamed files and corrupt DOCX archives are rejected before conversion',()=>{
   assert.throws(()=>inspectDocx(new TextEncoder().encode('not docx').buffer),/有效/)
   const bytes=new Uint8Array(24);new DataView(bytes.buffer).setUint32(0,0x04034b50,true);assert.throws(()=>inspectDocx(bytes.buffer),/损坏/)
+})
+
+test('PDF imports are size checked and reject files without a PDF signature',()=>{
+  assert.equal(validateFile({name:'notice.PDF',size:100},'notice'),'pdf')
+  assert.throws(()=>inspectPDF(new TextEncoder().encode('not a PDF').buffer),/不是有效的 PDF/)
+  assert.doesNotThrow(()=>inspectPDF(new TextEncoder().encode('%PDF-1.7').buffer))
 })
 
 test('Word paragraphs inside table cells produce valid GFM rows',()=>{

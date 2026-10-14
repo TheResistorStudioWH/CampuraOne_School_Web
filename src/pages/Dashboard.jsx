@@ -15,7 +15,7 @@ function Dashboard({ onLogout }) {
   const [requestedAdID, setRequestedAdID] = useState(null)
   const [activeConsoleModule, setActiveConsoleModule] = useState('notice')
   const { state, execute, isDemo, refresh, busy, refreshing } = useSchoolDemo()
-  const school = { name: state.profile.schoolName, logo: state.profile.schoolLogo }
+  const school = { name: state.profile.schoolName, logo: state.profile.schoolLogo, adminName: state.profile.adminName || '学校管理员' }
   const [accountPage, setAccountPage] = useState(null)
   const advertisements = useMemo(
     () => advertisementViewModels(state.advertisements),
@@ -76,18 +76,18 @@ function Dashboard({ onLogout }) {
             </button>
           </nav>
 
-          {!isDemo && <button className="quiet-action" disabled={busy||refreshing} onClick={refresh}>刷新数据</button>}
-          <AccountMenu
-            school={school}
-            onAction={setAccountPage}
-            onLogout={onLogout}
-          />
+          <div className="top-bar-actions">
+            {!isDemo && <button className={`refresh-data-control ${refreshing ? 'is-refreshing' : ''}`} disabled={busy||refreshing} onClick={refresh} aria-label="刷新数据" title="刷新数据">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.64 9A7 7 0 0 1 18 6.5L20 12M4 12l2 5.5A7 7 0 0 0 18.36 15"/></svg>
+            </button>}
+            <AccountMenu school={school} onAction={setAccountPage} onLogout={onLogout} />
+          </div>
         </div>
       </header>
 
       <section className="page-title-section">
         <h1>{greeting}，欢迎回来</h1>
-        <p className="admin-subtitle">{school.name}管理后台</p>
+        {activeTab !== 'operations' && <p className="admin-subtitle">{school.name}管理后台</p>}
       </section>
 
       <section className={`tab-content-shell ${isContentLeaving ? 'leaving' : 'entering'}`}>
@@ -98,7 +98,7 @@ function Dashboard({ onLogout }) {
             onOpenConsole={openConsoleModule}
           />
         ) : (
-          <Suspense fallback={<div className="console-loading-card">正在载入控制台模块…</div>}>
+          <Suspense fallback={<div className="console-loading-card" aria-label="正在载入控制台模块"><span/><span/><span/><span/></div>}>
             <OperationsPanel
               activeModule={activeConsoleModule}
               onModuleChange={setActiveConsoleModule}

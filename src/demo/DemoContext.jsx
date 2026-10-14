@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { createDemoState, demoDirectory, demoStudents, runDemoCommand } from './schoolDemo.js'
 import { loadSchoolState } from '../api/schoolClient.js'
+import ServerLoadingSkeleton from '../components/ServerLoadingSkeleton.jsx'
 
 const Context=createContext(null)
 export function DemoProvider({children,client=null,session=null,onLogout}) {
@@ -49,8 +50,8 @@ export function DemoProvider({children,client=null,session=null,onLogout}) {
   }
   async function changePassword(input){if(isDemo)return {data:{demo:true}};await client.request('password','POST',input);await onLogout()}
   const context={state,execute,changePassword,isDemo,busy,refreshing,session,history,findStudents,original,onLogout,refresh:()=>refresh().catch(()=>{})}
-  if(!state)return <section className="connection-state" role="status"><h2>{error?'无法加载工作台':'正在读取学校资料…'}</h2>{error&&<><p>{error}</p><button className="primary-action" disabled={refreshing} onClick={context.refresh}>重新读取</button><button className="quiet-action" onClick={onLogout}>返回登录</button></>}</section>
-  return <Context.Provider value={context}>{error&&<div className="connection-banner" role="alert">{error}<button disabled={busy||refreshing} onClick={context.refresh}>刷新数据</button></div>}<fieldset className="school-workspace-lock" disabled={busy||refreshing} aria-busy={busy||refreshing}>{children}</fieldset></Context.Provider>
+  if(!state)return <div className="server-load-state"><ServerLoadingSkeleton label={error?'学校资料读取失败':'正在读取学校资料'} />{error&&<section className="connection-state" role="alert"><h2>无法加载工作台</h2><p>{error}</p><button className="primary-action" disabled={refreshing} onClick={context.refresh}>重新读取</button><button className="quiet-action" onClick={onLogout}>返回登录</button></section>}</div>
+  return <Context.Provider value={context}><div className={`server-data-frame ${busy||refreshing?'is-waiting':''}`} aria-busy={busy||refreshing}>{(busy||refreshing)&&<div className="server-wait-skeleton" role="status" aria-label="正在等待服务器响应"><span/><span/><span/><span/></div>}{error&&<div className="connection-banner" role="alert">{error}<button disabled={busy||refreshing} onClick={context.refresh}>刷新数据</button></div>}<fieldset className="school-workspace-lock" disabled={busy||refreshing}>{children}</fieldset></div></Context.Provider>
 }
 // eslint-disable-next-line react-refresh/only-export-components
 export function useSchoolDemo(){return useContext(Context)}

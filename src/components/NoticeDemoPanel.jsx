@@ -6,7 +6,7 @@ import { emptyTarget, noticeStatus, scopeKey, scopeLabel, shanghaiISO } from '..
 
 const labels = { active:'已发布', scheduled:'待发布', expired:'已结束', revoked:'已撤回' }
 export default function NoticeDemoPanel({ initialType = 'short', showToast }) {
-  const {state,execute,isDemo,findStudents,history} = useSchoolDemo()
+  const {state,execute,findStudents,history} = useSchoolDemo()
   const directory=state.directory
   const [students,setStudents]=useState([]),[queryBy,setQueryBy]=useState('studentNumber'),[searching,setSearching]=useState(false)
   const [imported,setImported]=useState(null)
@@ -47,7 +47,7 @@ export default function NoticeDemoPanel({ initialType = 'short', showToast }) {
   async function openHistory(id){if(historyID===id){setHistoryID(null);return}try{await history('announcements',id);setHistoryID(id)}catch(e){showToast(e.message,'warning')}}
   const localTime=value=>value?.replace(' ','T').slice(0,16)
   return <article className="info-card notice-operation-card">
-    <div className="operation-card-head"><div><p className="eyebrow">校园通知{isDemo?' · 演示':''}</p><h2>{editing?'编辑通知':'发布通知'}</h2></div>{editing&&<button className="quiet-action" onClick={reset}>取消编辑</button>}</div>
+    <div className="operation-card-head"><h2>{editing?'编辑通知':'发布通知'}</h2>{editing&&<button className="quiet-action" onClick={reset}>取消编辑</button>}</div>
     <form key={formKey} onSubmit={submit}>
       <div className="notice-schedule-layout notice-schedule-layout-three">
         <section className="notice-form-column"><p className="notice-form-column-title">通知类型</p><label>类型<select value={type} onChange={e=>setType(Number(e.target.value))}><option value={0}>日常短通知</option><option value={1}>紧急短通知</option><option value={2}>重要通知 · Markdown</option></select></label></section>
@@ -58,7 +58,7 @@ export default function NoticeDemoPanel({ initialType = 'short', showToast }) {
         </section>
       </div>
       <div className="form-grid"><label className="full-row">标题<input name="title" required maxLength={200} defaultValue={editing?.title} placeholder="填写通知标题" /></label>
-        {type===2&&<div className="full-row"><FileImport kind="notice" label="导入 Word 或 Markdown" onReady={setImported} onClear={()=>setImported(null)} preview={result=><div className="import-preview"><MarkdownPreview>{result.markdown}</MarkdownPreview></div>} />{imported&&<div className="import-actions"><button type="button" className="quiet-action" onClick={()=>{setContent(imported.markdown);setImported(null)}}>替换正文</button><button type="button" className="quiet-action" onClick={()=>{setContent(value=>value+(value?'\n\n':'')+imported.markdown);setImported(null)}}>追加到正文</button></div>}</div>}
+        {type===2&&<div className="full-row"><FileImport kind="notice" label="导入 Word、PDF 或 Markdown" onReady={setImported} onClear={()=>setImported(null)} preview={result=><div className="import-preview"><MarkdownPreview>{result.markdown}</MarkdownPreview></div>} />{imported&&<div className="import-actions"><button type="button" className="quiet-action" onClick={()=>{setContent(imported.markdown);setImported(null)}}>替换正文</button><button type="button" className="quiet-action" onClick={()=>{setContent(value=>value+(value?'\n\n':'')+imported.markdown);setImported(null)}}>追加到正文</button></div>}</div>}
         <label className="full-row">{type===2?'Markdown 正文':'正文'}<textarea required value={content} onChange={e=>setContent(e.target.value)} rows={type===2?10:4} maxLength={100000} /></label>
       </div>
       {type===2&&<MarkdownPreview>{content}</MarkdownPreview>}

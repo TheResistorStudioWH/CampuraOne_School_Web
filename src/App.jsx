@@ -3,6 +3,7 @@ import Login from './pages/Login.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import { DemoProvider } from './demo/DemoContext.jsx'
 import { createSchoolClient } from './api/schoolClient.js'
+import ServerLoadingSkeleton from './components/ServerLoadingSkeleton.jsx'
 
 const live=import.meta.env.VITE_APP_MODE==='live'
 const sessionKey='campura-school-session'
@@ -29,6 +30,6 @@ export default function App(){
     if(live){try{await client.request('logout','POST')}catch(e){if(e.status!==401){setFeedback('退出请求未完成，请重试。');return}}}
     clearSession();client.setToken(null);setSession(null)
   }
-  if(restoring)return <div className="connection-state" role="status">正在恢复登录…</div>
+  if(restoring)return <ServerLoadingSkeleton label="正在恢复登录" />
   return session?<DemoProvider client={live?client:null} session={session} onLogout={logout}><Dashboard onLogout={logout} />{feedback&&<p className="connection-banner" role="alert">{feedback}</p>}</DemoProvider>:<Login onLogin={login} live={live} sessionFeedback={feedback} />
 }

@@ -37,7 +37,7 @@ export default function AdApprovalPanel({advertisements,initialAdID=null,onRevie
   }
   const history=state.logs.filter(l=>l.resource==='advertisement'&&l.resourceID===selected?.adID)
   return <section className="approval-module" aria-labelledby="ad-approval-heading">
-    <header className="module-heading-row"><div><p className="eyebrow">商户投放{isDemo?' · 演示':''}</p><h2 id="ad-approval-heading">广告审批</h2><p>查看素材、核对投放，完成审核。</p></div><div className="approval-summary-pill"><strong>{counts.pending}</strong><span>条待处理</span></div></header>
+    <header className="module-heading-row"><h2 id="ad-approval-heading">广告审批</h2><div className="approval-summary-pill"><strong>{counts.pending}</strong><span>条待处理</span></div></header>
     <div className="approval-toolbar">
       <div className="approval-filter-group" role="group" aria-label="审批状态筛选" data-active-status={statusFilter} style={{'--filter-total':options.length,'--filter-index':options.findIndex(([id])=>id===statusFilter)}}>
         <span className="approval-filter-indicator" aria-hidden="true" />
