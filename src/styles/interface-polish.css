@@ -8,31 +8,46 @@
 }
 
 .top-bar-actions { display:flex; align-items:center; gap:8px; margin-left:auto; }
+.refresh-control-wrap { position:relative; display:block; width:40px; height:40px; flex:0 0 40px; }
 .refresh-data-control {
-  position:relative; display:grid; place-items:center; width:40px; height:40px; flex:0 0 40px;
-  border:0; border-radius:14px; color:var(--ui-blue); background:transparent; cursor:pointer;
-  transition:background-color .18s ease, color .18s ease, transform .18s ease;
+  position:absolute; inset:0 0 0 auto; display:flex; align-items:center; justify-content:flex-end; gap:6px;
+  width:40px; height:40px; overflow:hidden; padding:0 8px; border:0; border-radius:14px;
+  color:var(--ui-blue); background:transparent; cursor:pointer; white-space:nowrap;
+  transition:width .22s cubic-bezier(.2,.8,.2,1), background-color .18s ease, color .18s ease;
 }
-.refresh-data-control svg { width:19px; height:19px; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
-.refresh-data-control::before {
-  content:attr(aria-label); position:absolute; right:calc(100% + 9px); top:50%; z-index:30;
-  padding:6px 10px; border-radius:9px; color:var(--ui-text); background:var(--ui-surface);
-  box-shadow:var(--ui-elevation-1); font-size:12px; line-height:1; white-space:nowrap;
-  opacity:0; transform:translate(4px,-50%); pointer-events:none; transition:opacity .16s ease, transform .16s ease;
+.refresh-data-control svg { width:19px; height:19px; flex:0 0 19px; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.refresh-data-label { max-width:0; overflow:hidden; opacity:0; font-size:12px; font-weight:600; transition:max-width .2s ease, opacity .14s ease; }
+.refresh-data-control:hover, .refresh-data-control:focus-visible {
+  width:104px; background:var(--ui-tint-blue); box-shadow:var(--ui-elevation-1);
 }
-.refresh-data-control:hover, .refresh-data-control:focus-visible { background:var(--ui-tint-blue); }
-.refresh-data-control:hover::before, .refresh-data-control:focus-visible::before { opacity:1; transform:translate(0,-50%); }
+.refresh-data-control:hover .refresh-data-label, .refresh-data-control:focus-visible .refresh-data-label { max-width:56px; opacity:1; }
 .refresh-data-control:disabled { opacity:.55; cursor:wait; }
-.refresh-data-control.is-refreshing svg { animation:refresh-spin .9s linear infinite; }
-@keyframes refresh-spin { to { transform:rotate(360deg); } }
+.refresh-data-control:hover svg, .refresh-data-control:focus-visible svg { animation:refresh-spin-once .52s cubic-bezier(.2,.75,.25,1); }
+.refresh-data-control.is-refreshing svg { animation:refresh-spin-loop .88s linear infinite; }
+.refresh-data-control.is-refreshing:hover svg, .refresh-data-control.is-refreshing:focus-visible svg { animation:refresh-spin-loop .88s linear infinite; }
+@keyframes refresh-spin-once { to { transform:rotate(360deg); } }
+@keyframes refresh-spin-loop { to { transform:rotate(360deg); } }
 
 .account-disclosure { display:grid; width:15px; height:10px; place-items:center; color:var(--ui-secondary); }
-.account-disclosure img { display:block; width:15px; height:9px; object-fit:fill; transition:transform .2s ease; }
-.account-disclosure.open img { transform:rotate(180deg); }
+.account-disclosure.open { transform:none; }
+.account-disclosure-mark { display:block; width:15px; height:9px; background:currentColor; -webkit-mask:url('../assets/account-chevron.png') center / contain no-repeat; mask:url('../assets/account-chevron.png') center / contain no-repeat; transform:rotate(0); transition:transform .2s ease; }
+.account-disclosure.open .account-disclosure-mark { transform:rotate(180deg); }
 .account-panel { transform-origin:top right; animation:account-panel-enter .22s cubic-bezier(.2,.8,.2,1) both; }
 .account-panel.closing { animation:account-panel-exit .16s ease-in both; pointer-events:none; }
 @keyframes account-panel-enter { from { opacity:0; transform:translateY(12px) scale(.98); } to { opacity:1; transform:translateY(0) scale(1); } }
 @keyframes account-panel-exit { from { opacity:1; transform:translateY(0) scale(1); } to { opacity:0; transform:translateY(7px) scale(.985); } }
+
+.panel-switcher { position:relative; }
+.switcher-pane {
+  width:100%; opacity:1; visibility:visible; transform:translate3d(0,0,0);
+  transition:opacity .18s ease-out, transform .18s ease-out;
+}
+.switcher-pane.is-inactive {
+  position:absolute; top:0; left:0; opacity:0; visibility:hidden; pointer-events:none;
+  transform:translate3d(0,6px,0);
+}
+.switcher-pane.is-active { position:relative; }
+.console-module-stage.panel-switcher { min-height:260px; }
 
 /* Console details use one calm module surface with tonal sections inside. */
 .notice-operation-card, .schedule-demo-panel {
@@ -99,6 +114,7 @@ select:focus, textarea:focus {
 button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
   outline:2px solid color-mix(in srgb,var(--ui-blue) 72%,transparent); outline-offset:2px;
 }
+button, a, input, select, textarea { touch-action:manipulation; }
 
 /* Initial load and in-place server waits share one shimmer language. */
 .server-loading-screen { width:min(1120px,calc(100% - 40px)); min-height:100vh; margin:auto; padding:24px 0 48px; }
@@ -143,6 +159,27 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .server-wait-skeleton > span:nth-child(3)::after { animation-delay:.18s; }
 .server-wait-skeleton > span:nth-child(4)::after { animation-delay:.34s; }
 
+@media (prefers-color-scheme:dark) {
+  :root {
+    --ui-tint-blue:#24283c;
+    --ui-tint-violet:#2c283d;
+    --ui-tint-teal:#203330;
+    --ui-elevation-1:0 2px 8px rgba(0,0,0,.24),0 1px 2px rgba(0,0,0,.18);
+    --ui-focus-ring:rgba(147,151,239,.23);
+  }
+  .module-heading-row .approval-summary-pill { color:#d1ccff; background:#302d49; }
+  .dashboard-grid > .info-card:nth-child(2) { background:linear-gradient(145deg,color-mix(in srgb,var(--ui-tint-blue) 82%,var(--ui-surface)),var(--ui-surface)); }
+  .dashboard-grid > .info-card:nth-child(3) { background:linear-gradient(145deg,color-mix(in srgb,var(--ui-tint-teal) 76%,var(--ui-surface)),var(--ui-surface)); }
+  .dashboard-grid > .info-card:nth-child(4) { background:linear-gradient(145deg,color-mix(in srgb,var(--ui-tint-violet) 78%,var(--ui-surface)),var(--ui-surface)); }
+  .notice-operation-card .notice-form-column { background:color-mix(in srgb,var(--ui-blue) 9%,var(--ui-surface)); }
+  .refresh-data-control:hover, .refresh-data-control:focus-visible { color:#d9dcff; }
+  .skeleton-orb::after, .skeleton-avatar::after, .skeleton-line::after, .skeleton-block::after,
+  .server-skeleton.compact > span::after, .server-wait-skeleton > span::after,
+  .console-loading-card > span::after {
+    background:linear-gradient(100deg,transparent 20%,rgba(199,205,255,.13) 48%,transparent 76%);
+  }
+}
+
 @media (max-width:700px) {
   .top-bar-actions { width:100%; }
   .top-bar-actions .school-profile-wrap { flex:1; }
@@ -155,7 +192,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .schedule-demo-panel > .schedule-scope,
   .schedule-demo-panel > form { padding:12px; }
 }
+@media (hover:none) {
+  .school-profile:hover, .info-card:hover, .drop-upload-zone:hover, .module-nav-button:hover { transform:none; }
+  .module-quick-control:not(.open) .module-quick-menu,
+  .status-quick-control:not(.open) .status-quick-menu { visibility:hidden; }
+}
 @media (prefers-reduced-motion:reduce) {
-  .server-skeleton-screen *, .server-skeleton *, .server-wait-skeleton *, .console-loading-card > span::after { animation-duration:4s; }
+  *, *::before, *::after { animation-duration:.01ms !important; transition-duration:.01ms !important; }
   .account-panel, .account-panel.closing { animation-duration:.01ms; }
 }

@@ -11,6 +11,7 @@ export function DemoProvider({children,client=null,session=null,onLogout}) {
   const isDemo=!client
   function commit(next){latest.current=next;setState(next)}
   async function refresh(signal) {
+    if(isDemo){commit({...createDemoState(),directory:demoDirectory});setError('');return}
     const serial=++generation.current
     setRefreshing(true)
     try {const next=await loadSchoolState(client,signal);if(serial===generation.current&&!signal?.aborted){commit(next);setError('')}}

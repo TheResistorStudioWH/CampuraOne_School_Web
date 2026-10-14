@@ -303,43 +303,6 @@
   min-height: 360px;
 }
 
-.tab-content-shell.entering {
-  animation: tabContentEnter 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.tab-content-shell.leaving {
-  pointer-events: none;
-  animation: tabContentLeave 0.16s ease-in both;
-}
-
-@keyframes tabContentEnter {
-  from {
-    opacity: 0;
-    filter: blur(6px);
-    transform: translateY(14px) scale(0.995);
-  }
-
-  to {
-    opacity: 1;
-    filter: blur(0);
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes tabContentLeave {
-  from {
-    opacity: 1;
-    filter: blur(0);
-    transform: translateY(0) scale(1);
-  }
-
-  to {
-    opacity: 0;
-    filter: blur(5px);
-    transform: translateY(-8px) scale(0.998);
-  }
-}
-
 /* ========== Dashboard Cards ========== */
 .dashboard-grid {
   display: grid;

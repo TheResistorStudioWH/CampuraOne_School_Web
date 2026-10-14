@@ -1,17 +1,18 @@
-import { lazy, Suspense, useMemo, useState } from 'react'
+import { memo, useCallback, useMemo, useState } from 'react'
 import { dashboardStats } from '../api/schoolClient.js'
 import { useSchoolDemo } from '../demo/DemoContext.jsx'
 import { advertisementViewModels, dashboardAdStats } from '../demo/schoolDemo.js'
 import DashboardPanel from '../components/DashboardPanel.jsx'
+import OperationsPanel from '../components/OperationsPanel.jsx'
 import AccountMenu from '../components/AccountMenu.jsx'
 import AccountDemoDialog from '../components/AccountDemoDialog.jsx'
 
-const OperationsPanel = lazy(() => import('../components/OperationsPanel.jsx'))
+const StableDashboardPanel = memo(DashboardPanel)
+const StableOperationsPanel = memo(OperationsPanel)
 
 function Dashboard({ onLogout }) {
   const [activeTab, setActiveTab] = useState('dashboard')
-  const [displayedTab, setDisplayedTab] = useState('dashboard')
-  const [isContentLeaving, setIsContentLeaving] = useState(false)
+  const [consoleVisited, setConsoleVisited] = useState(false)
   const [requestedAdID, setRequestedAdID] = useState(null)
   const [activeConsoleModule, setActiveConsoleModule] = useState('notice')
   const { state, execute, isDemo, refresh, busy, refreshing } = useSchoolDemo()
@@ -27,30 +28,21 @@ function Dashboard({ onLogout }) {
   )
   const currentHour = new Date().getHours()
   const greeting = getGreeting(currentHour)
-  function handleReviewDecision(adID, action, reason = '') {
+  const handleReviewDecision = useCallback((adID, action, reason = '') => {
     const ad = state.advertisements.find(a => a.adID === adID)
     return execute('advertisements', 'POST', { id: adID, version: ad.version, action, reason })
-  }
+  }, [state.advertisements, execute])
 
-  function openConsoleModule(moduleName = 'notice', adID = null) {
+  const switchTab = useCallback((nextTab) => {
+    if (nextTab === 'operations') setConsoleVisited(true)
+    setActiveTab(nextTab)
+  }, [])
+
+  const openConsoleModule = useCallback((moduleName = 'notice', adID = null) => {
     setRequestedAdID(adID)
     setActiveConsoleModule(moduleName)
     switchTab('operations')
-  }
-
-  function switchTab(nextTab) {
-    if (nextTab === activeTab || isContentLeaving) {
-      return
-    }
-
-    setActiveTab(nextTab)
-    setIsContentLeaving(true)
-
-    window.setTimeout(() => {
-      setDisplayedTab(nextTab)
-      setIsContentLeaving(false)
-    }, 160)
-  }
+  }, [switchTab])
 
   return (
     <main className="admin-shell">
@@ -77,9 +69,9 @@ function Dashboard({ onLogout }) {
           </nav>
 
           <div className="top-bar-actions">
-            {!isDemo && <button className={`refresh-data-control ${refreshing ? 'is-refreshing' : ''}`} disabled={busy||refreshing} onClick={refresh} aria-label="刷新数据" title="刷新数据">
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.64 9A7 7 0 0 1 18 6.5L20 12M4 12l2 5.5A7 7 0 0 0 18.36 15"/></svg>
-            </button>}
+            <span className="refresh-control-wrap"><button className={`refresh-data-control ${busy||refreshing ? 'is-refreshing' : ''}`} disabled={busy||refreshing} onClick={refresh} aria-label="刷新数据" title="刷新数据">
+              <span className="refresh-data-label">刷新数据</span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.64 9A7 7 0 0 1 18 6.5L20 12M4 12l2 5.5A7 7 0 0 0 18.36 15"/></svg>
+            </button></span>
             <AccountMenu school={school} onAction={setAccountPage} onLogout={onLogout} />
           </div>
         </div>
@@ -87,27 +79,26 @@ function Dashboard({ onLogout }) {
 
       <section className="page-title-section">
         <h1>{greeting}，欢迎回来</h1>
-        {activeTab !== 'operations' && <p className="admin-subtitle">{school.name}管理后台</p>}
+        <p className="admin-subtitle">{school.name}管理后台</p>
       </section>
 
-      <section className={`tab-content-shell ${isContentLeaving ? 'leaving' : 'entering'}`}>
-        {displayedTab === 'dashboard' ? (
-          <DashboardPanel
+      <section className="tab-content-shell panel-switcher">
+        <div className={`switcher-pane ${activeTab === 'dashboard' ? 'is-active' : 'is-inactive'}`} aria-hidden={activeTab !== 'dashboard'} inert={activeTab !== 'dashboard'}>
+          <StableDashboardPanel
             advertisements={advertisements}
             adStats={adStats}
             onOpenConsole={openConsoleModule}
           />
-        ) : (
-          <Suspense fallback={<div className="console-loading-card" aria-label="正在载入控制台模块"><span/><span/><span/><span/></div>}>
-            <OperationsPanel
+        </div>
+        {consoleVisited && <div className={`switcher-pane ${activeTab === 'operations' ? 'is-active' : 'is-inactive'}`} aria-hidden={activeTab !== 'operations'} inert={activeTab !== 'operations'}>
+            <StableOperationsPanel
               activeModule={activeConsoleModule}
               onModuleChange={setActiveConsoleModule}
               advertisements={advertisements}
               requestedAdID={requestedAdID}
               onReviewDecision={handleReviewDecision}
             />
-          </Suspense>
-        )}
+        </div>}
       </section>
 
       {accountPage && <AccountDemoDialog page={accountPage} onClose={() => setAccountPage(null)} />}

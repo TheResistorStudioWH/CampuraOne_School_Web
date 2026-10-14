@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import chevronMark from '../assets/account-chevron.svg'
 
 const actions = [
   { label: '账号设置', icon: 'person', page: 'account' },
@@ -83,7 +82,7 @@ export default function AccountMenu({ school, onAction, onLogout }) {
         onClick={() => isOpen ? closeMenu() : openMenu()}>
         <span className="school-logo">{school.logo ? <img src={school.logo} alt="" /> : school.logoText}</span>
         <span className="account-identity"><strong>{school.adminName}</strong><small>{school.name}</small></span>
-        <span className={`account-disclosure ${isOpen ? 'open' : ''}`} aria-hidden="true"><img src={chevronMark} alt="" /></span>
+        <span className={`account-disclosure ${isOpen ? 'open' : ''}`} aria-hidden="true"><span className="account-disclosure-mark" /></span>
       </button>
       {isMounted && (
         <div ref={panelRef} className={`account-panel ${isClosing ? 'closing' : ''}`} id="account-actions" aria-label="账号操作" inert={isClosing}>
