@@ -293,6 +293,8 @@
   margin-bottom: 24px;
 }
 
+.mobile-login-brand { display: none; }
+
 .campura-login-card h2 {
   margin: 0;
   color: #f8fafc;
@@ -577,51 +579,73 @@
 
 @media (max-width: 920px) {
   .campura-login-page {
+    min-height: 100dvh;
     padding: 24px;
+    overflow: visible;
   }
 
   .login-stage {
+    width: min(480px, calc(100vw - 48px));
     min-height: auto;
     grid-template-columns: 1fr;
   }
 
-  .login-brand-panel {
-    min-height: 440px;
-  }
+  .campura-login-page .login-brand-panel { display: none; }
 
   .campura-login-card {
     min-height: auto;
+    padding: 32px;
   }
 
-  .login-meta-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .mobile-login-brand {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 0 0 28px;
+    color: var(--ui-text);
+    font-size: 19px;
+    font-weight: 750;
+    letter-spacing: -.035em;
+  }
+
+  .mobile-login-brand span {
+    color: var(--ui-secondary);
+    font-size: 12px;
+    font-weight: 550;
+    letter-spacing: 0;
   }
 }
 
 @media (max-width: 560px) {
   .campura-login-page {
-    padding: 16px;
+    padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
   }
 
-  .login-brand-panel,
-  .campura-login-card {
-    border-radius: 28px;
-  }
-
-  .login-brand-panel {
-    padding: 28px;
-    min-height: 380px;
-  }
+  .login-stage { width:100%; }
 
   .campura-login-card {
+    border-radius: 24px;
     min-height: auto;
-    padding: 26px;
+    padding: 24px;
   }
+
+  .mobile-login-brand { margin-bottom:20px; }
+  .campura-login-card > label { margin-top:0; }
+  .campura-login-card .login-submit-button { margin-top:0; }
 
   .login-options-row {
-    align-items: flex-start;
-    flex-direction: column;
+    align-items: center;
+    flex-direction: row;
+    gap: 8px;
   }
+
+  .login-context-card { display: none; }
+  .login-card-head { margin-bottom: 22px; }
+  .login-card-head > .eyebrow { display: none; }
+  .campura-login-card h2 { font-size: 30px; }
+  .campura-login-card input[type="text"],
+  .campura-login-card input[type="password"],
+  .campura-login-card .password-field-wrap input { font-size: 16px; }
 }
 
 /* ========== Login Password Icon ========== */

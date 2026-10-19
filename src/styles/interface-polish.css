@@ -192,6 +192,30 @@ button, a, input, select, textarea { touch-action:manipulation; }
   .schedule-demo-panel > .schedule-scope,
   .schedule-demo-panel > form { padding:12px; }
 }
+@media (max-width:560px) {
+  .top-glass-bar { padding:8px 0; }
+  .top-glass-inner { gap:8px; }
+  .top-bar-actions { justify-content:flex-end; }
+  .top-bar-actions .school-profile-wrap { width:auto; flex:0 0 auto; }
+  .top-bar-actions .account-trigger { width:auto; min-height:42px; padding:4px 8px 4px 4px; }
+  .admin-shell { padding-top:132px; }
+  .console-module-rail { padding:8px; border-radius:20px; }
+  .console-module-rail nav { gap:4px; }
+  .console-module-rail .module-nav-button {
+    min-height:52px; grid-template-columns:32px minmax(0,1fr) auto;
+    gap:6px; padding:8px;
+  }
+  .console-module-rail .module-index { width:32px; height:32px; }
+  .console-module-rail .module-copy strong { font-size:13px; }
+  .console-module-rail .module-copy small,
+  .console-module-rail .module-quick-control { display:none; }
+  .module-heading-row { flex-direction:row; align-items:center; gap:8px; }
+  .module-heading-row h2 { font-size:24px; }
+}
+@media (max-width:360px) {
+  .console-module-rail .module-badge { display:none; }
+  .console-module-rail .module-nav-button { gap:5px; }
+}
 @media (hover:none) {
   .school-profile:hover, .info-card:hover, .drop-upload-zone:hover, .module-nav-button:hover { transform:none; }
   .module-quick-control:not(.open) .module-quick-menu,

@@ -63,6 +63,7 @@ function Login({ onLogin, live = false, sessionFeedback }) {
 
         <form className="login-card campura-login-card" onSubmit={submit}>
           <div className="login-card-head">
+            <p className="mobile-login-brand">Campura One <span>学校管理端</span></p>
             <p className="eyebrow">School Admin Console</p>
             <h2>欢迎回来</h2>
             <p className="login-desc">登录后继续管理学校信息与校园服务内容。</p>
