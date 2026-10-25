@@ -1,4 +1,4 @@
-const paths = { profile:'profile', directory:'directory', students:'students', semesters:'semesters', announcements:'announcements', advertisements:'advertisements', timetables:'timetables', calendar:'calendar', dashboard:'dashboard' }
+const paths = { maps:'maps', profile:'profile', directory:'directory', students:'students', semesters:'semesters', announcements:'announcements', advertisements:'advertisements', timetables:'timetables', calendar:'calendar', dashboard:'dashboard' }
 export class ApiError extends Error {
   constructor(status, message, details) { super(message); this.status=status; this.details=details }
 }

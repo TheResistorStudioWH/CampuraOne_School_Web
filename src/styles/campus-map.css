@@ -1,0 +1,313 @@
+.camap-panel {
+  padding: 28px;
+  max-width: 1500px;
+  margin: auto;
+  color: #2f4339;
+}
+.camap-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+.camap-eyebrow {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #82957f;
+}
+.camap-heading h2 {
+  font-size: 25px;
+  letter-spacing: 1px;
+  margin: 7px 0;
+}
+.camap-heading p {
+  font-size: 12px;
+  color: #7b8e79;
+  margin: 0;
+}
+.camap-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+.camap-top-actions a {
+  text-decoration: none;
+}
+.camap-unavailable {
+  font-size: 11px;
+  color: #a2ad9b;
+}
+.camap-demo-banner {
+  padding: 10px 14px;
+  background: #f3efe2;
+  border: 1px solid #e8e1cc;
+  border-radius: 8px;
+  color: #99834f;
+  font-size: 11px;
+  margin-bottom: 16px;
+}
+.camap-message {
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #e9f0e3;
+  color: #4a7047;
+  font-size: 12px;
+  margin-bottom: 16px;
+  white-space: pre-wrap;
+}
+.camap-upload {
+  border: 1.5px dashed #c4d3ba;
+  border-radius: 13px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  background: #f9fbf5;
+  margin-bottom: 22px;
+}
+.camap-file-icon {
+  font-size: 35px;
+  color: #50764c;
+  background: #e9f0df;
+  width: 58px;
+  height: 65px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+}
+.camap-upload > div:nth-child(2) {
+  flex: 1;
+}
+.camap-upload h3 {
+  font-size: 16px;
+  margin: 0 0 7px;
+}
+.camap-upload p {
+  font-size: 12px;
+  color: #7f9076;
+  margin: 0 0 7px;
+}
+.camap-upload small {
+  font-size: 10px;
+  color: #a0ad94;
+}
+.camap-main-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.8fr) minmax(300px, 1.2fr);
+  gap: 22px;
+}
+.camap-map-card,
+.camap-review-card,
+.camap-history {
+  background: #fdfefa;
+  border: 1px solid #e2e8db;
+  border-radius: 12px;
+  padding: 20px;
+}
+.camap-card-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.camap-card-title h3 {
+  font-size: 15px;
+  margin: 0 0 12px;
+}
+.camap-card-title select {
+  max-width: 190px;
+  border: 1px solid #e1e6d9;
+  border-radius: 5px;
+  padding: 5px;
+  font-size: 10px;
+  background: transparent;
+}
+.camap-preview {
+  width: 100%;
+  max-height: 360px;
+  display: block;
+  background: #f4f6ed;
+  border-radius: 8px;
+}
+.camap-map-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding-top: 18px;
+  gap: 10px;
+}
+.camap-map-stats span {
+  text-align: center;
+  font-size: 10px;
+  color: #94a284;
+}
+.camap-map-stats strong {
+  display: block;
+  font-size: 21px;
+  color: #577250;
+  margin-bottom: 4px;
+}
+.camap-steps {
+  padding-left: 25px;
+}
+.camap-steps li {
+  padding: 15px 0;
+  font-size: 13px;
+  color: #627a56;
+}
+.camap-steps p {
+  font-size: 11px;
+  color: #98a68c;
+  margin: 6px 0;
+}
+.camap-review-description {
+  font-size: 11px;
+  color: #899a7b;
+}
+.camap-bulk {
+  display: flex;
+  gap: 10px;
+  margin: 10px 0;
+}
+.camap-bulk button,
+.camap-history button {
+  border: 1px solid #dfe6d6;
+  background: #f5f8ef;
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  color: #5d7651;
+}
+.camap-conflict {
+  border-top: 1px solid #e5eadf;
+  padding-top: 13px;
+  margin-top: 13px;
+}
+.camap-conflict > strong {
+  font-size: 12px;
+}
+.camap-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+.camap-compare label {
+  border: 1px solid #e0e7d8;
+  border-radius: 7px;
+  padding: 10px;
+}
+.camap-compare label.chosen {
+  border-color: #628652;
+  background: #f1f6e9;
+}
+.camap-compare label > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  margin-bottom: 8px;
+}
+.camap-compare .camap-preview {
+  max-height: 140px;
+}
+.camap-compare pre {
+  font-size: 9px;
+  max-height: 140px;
+  overflow: auto;
+  color: #809276;
+}
+.camap-duplicate {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 11px;
+  border-top: 1px solid #e6eade;
+  padding: 11px 0;
+}
+.camap-duplicate select {
+  padding: 5px;
+  border: 1px solid #dce4d4;
+  border-radius: 5px;
+  background: white;
+}
+.camap-error {
+  color: #b6694a;
+  font-size: 11px;
+}
+.camap-note {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 11px;
+  color: #8a9a7d;
+  margin-top: 15px;
+}
+.camap-note input {
+  border: 1px solid #dfe6d6;
+  border-radius: 5px;
+  padding: 10px;
+  background: #fff;
+}
+.camap-publish-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+.camap-history {
+  margin-top: 22px;
+}
+.camap-history h3 {
+  font-size: 15px;
+  margin: 0 0 14px;
+}
+.camap-history > p {
+  font-size: 12px;
+  color: #94a284;
+}
+.camap-history > div {
+  display: flex;
+  gap: 13px;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 1px solid #edf0e7;
+  font-size: 12px;
+}
+.camap-history > div > span {
+  flex: 1;
+}
+.camap-history small {
+  color: #98a88b;
+  font-size: 10px;
+}
+.camap-panel button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.module-icon.map {
+  border: 1.5px solid currentColor;
+  transform: rotate(-8deg);
+  width: 17px;
+  height: 17px;
+  border-radius: 3px;
+}
+@media (max-width: 1100px) {
+  .camap-main-grid {
+    grid-template-columns: 1fr;
+  }
+  .camap-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .camap-upload {
+    padding: 16px;
+    gap: 12px;
+  }
+  .camap-file-icon {
+    display: none;
+  }
+}

@@ -7,11 +7,14 @@ import ScheduleDemoPanel from './ScheduleDemoPanel.jsx'
 import HoverQuickControl from './HoverQuickControl.jsx'
 import SlidingSelection from './SlidingSelection.jsx'
 
+import CampusMapPanel from './CampusMapPanel.jsx'
+
 const StableNoticePanel = memo(NoticeDemoPanel)
 const StableAdPanel = memo(AdApprovalPanel)
 const StableSchedulePanel = memo(ScheduleDemoPanel)
 
 const consoleModules = [
+  { id:'map',icon:'map',label:'校园地图',description:'万卷图上传、合并与发布',shortcuts:[['upload','上传地图'],['history','版本记录']] },
   { id:'notice',icon:'notice',label:'通知发布',description:'发布、编辑与撤回',shortcuts:[['important','发布重要通知'],['short','发布短通知']] },
   { id:'ads',icon:'ads',label:'广告审批',description:'审核与撤下投放',shortcuts:[['pending','待审批'],['all','全部广告']] },
   { id:'timetable',icon:'timetable',label:'课表管理',description:'常规课表与整周覆盖',shortcuts:[['temporary','发布临时课表'],['history','版本与覆盖']] },
@@ -51,6 +54,7 @@ export default function OperationsPanel({activeModule='notice',onModuleChange,ad
         </div>)}
       </nav><p>{isDemo?'本地演示 · 数据仅保留在本次登录中。未连接服务器。':'已连接学校管理服务，操作会保存到服务器。'}</p></aside>
       <div className="console-module-stage panel-switcher">
+        {(visitedModules.has('map')||activeModule==='map')&&<div className={`switcher-pane ${activeModule==='map'?'is-active':'is-inactive'}`} aria-hidden={activeModule!=='map'} inert={activeModule!=='map'}><CampusMapPanel /></div>}
         {(visitedModules.has('notice')||activeModule==='notice')&&<div className={`switcher-pane ${activeModule==='notice'?'is-active':'is-inactive'}`} aria-hidden={activeModule!=='notice'} inert={activeModule!=='notice'}><StableNoticePanel key={noticeKey} initialType={noticeShortcut} showToast={showToast} /></div>}
         {(visitedModules.has('ads')||activeModule==='ads')&&<div className={`switcher-pane ${activeModule==='ads'?'is-active':'is-inactive'}`} aria-hidden={activeModule!=='ads'} inert={activeModule!=='ads'}><StableAdPanel key={requestedAdID||'ads'} initialAdID={requestedAdID} advertisements={advertisements} onReviewDecision={onReviewDecision} statusFilter={adStatusFilter} onStatusFilterChange={setAdStatusFilter} showToast={showToast} /></div>}
         {(visitedModules.has('timetable')||activeModule==='timetable')&&<div className={`switcher-pane ${activeModule==='timetable'?'is-active':'is-inactive'}`} aria-hidden={activeModule!=='timetable'} inert={activeModule!=='timetable'}><StableSchedulePanel kind="timetable" mode={scheduleModes.timetable} onModeChange={changeTimetableMode} showToast={showToast} /></div>}
