@@ -1,86 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { encodeCamap } from "@campura/camap";
 import { useSchoolDemo } from "../demo/DemoContext.jsx";
-import "../styles/campus-map.css";
-
-function geometryPoints(entity) {
-  if (!entity) return [];
-  if (entity.geometry)
-    return entity.geometry.type === "point"
-      ? [entity.geometry.coordinates]
-      : entity.geometry.coordinates;
-  if (entity.position) return [entity.position];
-  return [];
-}
-function MiniMap({ features = [], highlight, comparison = [] }) {
-  const points = [...features, ...comparison].flatMap(geometryPoints),
-    xs = points.map((p) => p[0]),
-    ys = points.map((p) => p[1]),
-    xmin = Math.min(...xs, 0),
-    xmax = Math.max(...xs, 1),
-    ymin = Math.min(...ys, 0),
-    ymax = Math.max(...ys, 1),
-    width = Math.max(20, xmax - xmin),
-    height = Math.max(20, ymax - ymin),
-    scale = 250 / Math.max(width, height),
-    project = (p) => [25 + (p[0] - xmin) * scale, 25 + (ymax - p[1]) * scale];
-  return (
-    <svg
-      viewBox="0 0 300 300"
-      className="camap-preview"
-      role="img"
-      aria-label="校园地图平面预览"
-    >
-      <defs>
-        <pattern
-          id="camap-grid"
-          width="20"
-          height="20"
-          patternUnits="userSpaceOnUse"
-        >
-          <path d="M20 0H0V20" fill="none" stroke="#e1e8dc" strokeWidth=".7" />
-        </pattern>
-      </defs>
-      <rect width="300" height="300" fill="url(#camap-grid)" />
-      {features.map((f) => {
-        const points = geometryPoints(f),
-          color =
-            f.id === highlight
-              ? "#d28e40"
-              : f.kind === "building"
-                ? "#a0b8a5"
-                : f.kind === "merchant"
-                  ? "#d9c198"
-                  : "#43856a";
-        if (!points.length) return null;
-        if (f.geometry?.type === "polygon")
-          return (
-            <polygon
-              key={f.id}
-              points={points.map((p) => project(p).join(",")).join(" ")}
-              fill={color + "77"}
-              stroke={color}
-              strokeWidth="1.5"
-            />
-          );
-        const [x, y] = project(points[0]);
-        return (
-          <g key={f.id}>
-            <circle cx={x} cy={y} r="4" fill={color} />
-            <text x={x + 7} y={y + 3} fontSize="8" fill="#38553f">
-              {f.name}
-            </text>
-          </g>
-        );
-      })}
-      {!features.length && (
-        <text x="150" y="150" textAnchor="middle" fontSize="12" fill="#82927a">
-          尚无地标
-        </text>
-      )}
-    </svg>
-  );
-}
+import CampusMiniMap from "./CampusMiniMap.jsx";
 export default function CampusMapPanel() {
   const { mapRequest, isDemo } = useSchoolDemo(),
     [status, setStatus] = useState(null),
@@ -268,7 +189,11 @@ export default function CampusMapPanel() {
               ))}
             </select>
           </div>
-          <MiniMap features={features} />
+          <CampusMiniMap
+            features={features}
+            nodes={document?.nodes.filter((node) => node.frameId === activeFrame)}
+            edges={document?.edges.filter((edge) => edge.frameId === activeFrame)}
+          />
           <div className="camap-map-stats">
             <span>
               <strong>{document?.features.length || 0}</strong>地标
@@ -373,7 +298,7 @@ export default function CampusMapPanel() {
                         </span>
                         {entity ? (
                           <>
-                            <MiniMap
+                            <CampusMiniMap
                               features={[entity]}
                               highlight={entity.id}
                               comparison={[c.server, c.incoming].filter(

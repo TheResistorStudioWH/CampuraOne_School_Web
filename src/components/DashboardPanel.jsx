@@ -2,6 +2,7 @@ import { useSchoolDemo } from '../demo/DemoContext.jsx'
 import { noticeStatus, scopeLabel } from '../demo/schoolDemo.js'
 import { parseIcs } from '../data/utils/parseIcs.js'
 import plusIcon from '../assets/icons/plus.png'
+import DashboardMapPreview from './DashboardMapPreview.jsx'
 
 const statusLabels = {
     pending: '待审批',
@@ -10,7 +11,7 @@ const statusLabels = {
     withdrawn: '已撤下',
 }
 
-function DashboardPanel({ advertisements, adStats, onOpenConsole }) {
+function DashboardPanel({ advertisements, adStats, onOpenConsole, active }) {
     const { state, isDemo } = useSchoolDemo()
     const currentTerm = state.semesters.filter(t => t.startDate <= new Date().toISOString().slice(0,10)).sort((a,b)=>b.startDate.localeCompare(a.startDate))[0]
     const table = isDemo ? state.timetables.find(t => t.semesterID === currentTerm?.semesterID) : state.dashboard.timetable
@@ -145,6 +146,8 @@ function DashboardPanel({ advertisements, adStats, onOpenConsole }) {
                     </article>
                 </div>
             </section>
+
+            <DashboardMapPreview active={active} onOpenConsole={onOpenConsole} />
 
             <section className="dashboard-section-heading">
                 <div>

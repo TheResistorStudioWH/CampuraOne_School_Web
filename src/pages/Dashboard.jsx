@@ -88,6 +88,7 @@ function Dashboard({ onLogout }) {
             advertisements={advertisements}
             adStats={adStats}
             onOpenConsole={openConsoleModule}
+            active={activeTab === 'dashboard'}
           />
         </div>
         {consoleVisited && <div className={`switcher-pane ${activeTab === 'operations' ? 'is-active' : 'is-inactive'}`} aria-hidden={activeTab !== 'operations'} inert={activeTab !== 'operations'}>

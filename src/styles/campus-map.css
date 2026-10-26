@@ -1,8 +1,23 @@
+.camap-panel,
+.dashboard-map-card {
+  --camap-accent: var(--ui-blue);
+  --camap-muted: var(--ui-secondary);
+  --camap-line: var(--ui-line);
+  --camap-subtle: color-mix(in srgb, var(--ui-blue) 5%, var(--ui-group));
+  --camap-tint: color-mix(in srgb, var(--ui-blue) 11%, var(--ui-surface));
+  --camap-map-grid: color-mix(in srgb, var(--ui-blue) 12%, transparent);
+  --camap-map-label: var(--ui-text);
+  --camap-map-empty: var(--ui-secondary);
+  --camap-building: #7395a7;
+  --camap-merchant: #b78a53;
+  --camap-other: #478c80;
+  --camap-highlight: #be793b;
+}
 .camap-panel {
   padding: 28px;
   max-width: 1500px;
   margin: auto;
-  color: #2f4339;
+  color: var(--ui-text);
 }
 .camap-heading {
   display: flex;
@@ -14,7 +29,7 @@
 .camap-eyebrow {
   font-size: 10px;
   letter-spacing: 2px;
-  color: #82957f;
+  color: var(--camap-accent);
 }
 .camap-heading h2 {
   font-size: 25px;
@@ -23,7 +38,7 @@
 }
 .camap-heading p {
   font-size: 12px;
-  color: #7b8e79;
+  color: var(--camap-muted);
   margin: 0;
 }
 .camap-top-actions {
@@ -37,40 +52,40 @@
 }
 .camap-unavailable {
   font-size: 11px;
-  color: #a2ad9b;
+  color: var(--camap-muted);
 }
 .camap-demo-banner {
   padding: 10px 14px;
-  background: #f3efe2;
-  border: 1px solid #e8e1cc;
+  background: color-mix(in srgb, #b98247 12%, var(--ui-surface));
+  border: 1px solid color-mix(in srgb, #b98247 20%, var(--camap-line));
   border-radius: 8px;
-  color: #99834f;
+  color: color-mix(in srgb, #a66d2e 68%, var(--ui-text));
   font-size: 11px;
   margin-bottom: 16px;
 }
 .camap-message {
   padding: 12px 16px;
   border-radius: 8px;
-  background: #e9f0e3;
-  color: #4a7047;
+  background: var(--camap-tint);
+  color: color-mix(in srgb, var(--camap-accent) 75%, var(--ui-text));
   font-size: 12px;
   margin-bottom: 16px;
   white-space: pre-wrap;
 }
 .camap-upload {
-  border: 1.5px dashed #c4d3ba;
+  border: 1.5px dashed color-mix(in srgb, var(--camap-accent) 35%, var(--camap-line));
   border-radius: 13px;
   padding: 24px;
   display: flex;
   align-items: center;
   gap: 22px;
-  background: #f9fbf5;
+  background: var(--camap-subtle);
   margin-bottom: 22px;
 }
 .camap-file-icon {
   font-size: 35px;
-  color: #50764c;
-  background: #e9f0df;
+  color: var(--camap-accent);
+  background: var(--camap-tint);
   width: 58px;
   height: 65px;
   border-radius: 9px;
@@ -86,12 +101,12 @@
 }
 .camap-upload p {
   font-size: 12px;
-  color: #7f9076;
+  color: var(--camap-muted);
   margin: 0 0 7px;
 }
 .camap-upload small {
   font-size: 10px;
-  color: #a0ad94;
+  color: var(--camap-muted);
 }
 .camap-main-grid {
   display: grid;
@@ -101,8 +116,8 @@
 .camap-map-card,
 .camap-review-card,
 .camap-history {
-  background: #fdfefa;
-  border: 1px solid #e2e8db;
+  background: var(--ui-surface);
+  border: 1px solid var(--camap-line);
   border-radius: 12px;
   padding: 20px;
 }
@@ -118,19 +133,48 @@
 }
 .camap-card-title select {
   max-width: 190px;
-  border: 1px solid #e1e6d9;
+  border: 1px solid var(--camap-line);
   border-radius: 5px;
   padding: 5px;
   font-size: 10px;
-  background: transparent;
+  background: var(--ui-group);
+  color: var(--ui-text);
 }
 .camap-preview {
   width: 100%;
   max-height: 360px;
   display: block;
-  background: #f4f6ed;
+  background: var(--camap-subtle);
   border-radius: 8px;
 }
+.camap-grid-line { stroke: var(--camap-map-grid); }
+.camap-feature-building { color: var(--camap-building); }
+.camap-feature-merchant { color: var(--camap-merchant); }
+.camap-feature-other { color: var(--camap-other); }
+.camap-feature-highlight { color: var(--camap-highlight); }
+.camap-preview polygon {
+  fill: color-mix(in srgb, currentColor 47%, transparent);
+  stroke: currentColor;
+}
+.camap-preview circle { fill: currentColor; }
+.camap-preview .camap-route {
+  fill: none;
+  stroke: var(--camap-accent);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: .72;
+}
+.camap-preview .camap-feature-line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.camap-preview .camap-route-node { fill: var(--camap-accent); }
+.camap-map-label { fill: var(--camap-map-label); }
+.camap-map-empty { fill: var(--camap-map-empty); }
 .camap-map-stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -140,12 +184,12 @@
 .camap-map-stats span {
   text-align: center;
   font-size: 10px;
-  color: #94a284;
+  color: var(--camap-muted);
 }
 .camap-map-stats strong {
   display: block;
   font-size: 21px;
-  color: #577250;
+  color: var(--camap-accent);
   margin-bottom: 4px;
 }
 .camap-steps {
@@ -154,16 +198,16 @@
 .camap-steps li {
   padding: 15px 0;
   font-size: 13px;
-  color: #627a56;
+  color: var(--ui-text);
 }
 .camap-steps p {
   font-size: 11px;
-  color: #98a68c;
+  color: var(--camap-muted);
   margin: 6px 0;
 }
 .camap-review-description {
   font-size: 11px;
-  color: #899a7b;
+  color: var(--camap-muted);
 }
 .camap-bulk {
   display: flex;
@@ -172,16 +216,20 @@
 }
 .camap-bulk button,
 .camap-history button {
-  border: 1px solid #dfe6d6;
-  background: #f5f8ef;
+  border: 1px solid var(--camap-line);
+  background: var(--camap-tint);
   border-radius: 6px;
   padding: 7px 10px;
   font-size: 11px;
   cursor: pointer;
-  color: #5d7651;
+  color: var(--camap-accent);
+}
+.camap-bulk button:hover:not(:disabled),
+.camap-history button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--camap-accent) 18%, var(--ui-surface));
 }
 .camap-conflict {
-  border-top: 1px solid #e5eadf;
+  border-top: 1px solid var(--camap-line);
   padding-top: 13px;
   margin-top: 13px;
 }
@@ -195,13 +243,13 @@
   margin-top: 10px;
 }
 .camap-compare label {
-  border: 1px solid #e0e7d8;
+  border: 1px solid var(--camap-line);
   border-radius: 7px;
   padding: 10px;
 }
 .camap-compare label.chosen {
-  border-color: #628652;
-  background: #f1f6e9;
+  border-color: color-mix(in srgb, var(--camap-accent) 65%, var(--camap-line));
+  background: var(--camap-tint);
 }
 .camap-compare label > span {
   display: flex;
@@ -217,7 +265,9 @@
   font-size: 9px;
   max-height: 140px;
   overflow: auto;
-  color: #809276;
+  color: var(--camap-muted);
+  background: var(--ui-group);
+  border-radius: 6px;
 }
 .camap-duplicate {
   display: flex;
@@ -225,17 +275,18 @@
   justify-content: space-between;
   gap: 10px;
   font-size: 11px;
-  border-top: 1px solid #e6eade;
+  border-top: 1px solid var(--camap-line);
   padding: 11px 0;
 }
 .camap-duplicate select {
   padding: 5px;
-  border: 1px solid #dce4d4;
+  border: 1px solid var(--camap-line);
   border-radius: 5px;
-  background: white;
+  background: var(--ui-group);
+  color: var(--ui-text);
 }
 .camap-error {
-  color: #b6694a;
+  color: #b54f47;
   font-size: 11px;
 }
 .camap-note {
@@ -243,15 +294,17 @@
   flex-direction: column;
   gap: 7px;
   font-size: 11px;
-  color: #8a9a7d;
+  color: var(--camap-muted);
   margin-top: 15px;
 }
 .camap-note input {
-  border: 1px solid #dfe6d6;
+  border: 1px solid var(--camap-line);
   border-radius: 5px;
   padding: 10px;
-  background: #fff;
+  background: var(--ui-group);
+  color: var(--ui-text);
 }
+.camap-note input::placeholder { color: var(--camap-muted); }
 .camap-publish-actions {
   display: flex;
   justify-content: flex-end;
@@ -267,21 +320,21 @@
 }
 .camap-history > p {
   font-size: 12px;
-  color: #94a284;
+  color: var(--camap-muted);
 }
 .camap-history > div {
   display: flex;
   gap: 13px;
   align-items: center;
   padding: 12px 0;
-  border-top: 1px solid #edf0e7;
+  border-top: 1px solid var(--camap-line);
   font-size: 12px;
 }
 .camap-history > div > span {
   flex: 1;
 }
 .camap-history small {
-  color: #98a88b;
+  color: var(--camap-muted);
   font-size: 10px;
 }
 .camap-panel button:disabled {
@@ -294,6 +347,20 @@
   width: 17px;
   height: 17px;
   border-radius: 3px;
+}
+@media (prefers-color-scheme: dark) {
+  .camap-panel,
+  .dashboard-map-card {
+    --camap-map-grid: rgba(184, 192, 234, .15);
+    --camap-building: #8aaabd;
+    --camap-merchant: #d8ae78;
+    --camap-other: #78b9ae;
+    --camap-highlight: #f0b16c;
+  }
+  .camap-demo-banner {
+    color: color-mix(in srgb, #e4b87d 65%, var(--ui-text));
+  }
+  .camap-error { color: #e79287; }
 }
 @media (max-width: 1100px) {
   .camap-main-grid {
